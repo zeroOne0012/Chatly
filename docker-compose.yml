@@ -1,0 +1,12 @@
+services:
+  mysql:
+    container_name: mysql
+    image: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: '0000'
+      MYSQL_DATABASE: chatly
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      # - ./mysql/init:/docker-entrypoint-initdb.d
