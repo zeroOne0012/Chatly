@@ -1,19 +1,15 @@
 package com.chatter.Chatly.entity;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 
 @Entity
-
 @Getter
-@Setter
 @NoArgsConstructor
 public class User {
     @Id
@@ -28,6 +24,6 @@ public class User {
     @Column
     private String profileUrl;
     
-    @ManyToMany(mappedBy = "participants")
-    private Set<ChatRoom> chatRooms = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JoinedUser> channels = new ArrayList<>();
 }
