@@ -1,5 +1,4 @@
-package com.chatter.Chatly.entity.like;
-
+package com.chatter.Chatly.entity.file;
 import java.time.LocalDateTime;
 
 import com.chatter.Chatly.entity.User;
@@ -13,13 +12,13 @@ import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 
-public abstract class Like {
+public abstract class File {
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+
+    @Column
+    private String fileUrl;
     // @Column
     // private LocalDateTime createdAt = LocalDateTime.now();
 }

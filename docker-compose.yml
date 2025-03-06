@@ -7,6 +7,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: '0000'
       MYSQL_DATABASE: chatly
-    volumes:
-      - ./mysql/data:/var/lib/mysql
+    # volumes:
+    #   - ./mysql/data:/var/lib/mysql
       # - ./mysql/init:/docker-entrypoint-initdb.d
+    restart: always
