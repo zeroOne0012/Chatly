@@ -9,9 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
 
 @MappedSuperclass
-
 public abstract class File {
     @Id
     @GeneratedValue
@@ -19,6 +19,10 @@ public abstract class File {
 
     @Column
     private String fileUrl;
+    
+    public String getFileUrl() {
+        return fileUrl;
+    }
     // @Column
     // private LocalDateTime createdAt = LocalDateTime.now();
 }
