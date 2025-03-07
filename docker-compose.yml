@@ -11,3 +11,13 @@ services:
     #   - ./mysql/data:/var/lib/mysql
       # - ./mysql/init:/docker-entrypoint-initdb.d
     restart: always
+  
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+    restart: always
+    # environment:
+    #   - REDIS_PASSWORD=mysecretpassword
+    command: ["redis-server", "--appendonly", "yes"]

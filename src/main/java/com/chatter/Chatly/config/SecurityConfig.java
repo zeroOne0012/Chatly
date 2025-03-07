@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 // 모두 허용 
@@ -21,6 +22,12 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable()); // ✅ 기본 인증 비활성화 (선택)
 
         return httpSecurity.build();
+    }
+
+    // 비밀번호 BCrypt 암호화 빈 등록
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
 
