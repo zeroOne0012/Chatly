@@ -1,6 +1,6 @@
 package com.chatter.Chatly.entity.like;
 
-import com.chatter.Chatly.entity.Post;
+import com.chatter.Chatly.entity.Article;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"})) // name = "post_like",  생략
-public class PostLike extends Like {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "article_id"})) // name = "article_like",  생략
+public class ArticleLike extends Like {
     @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name = "article_id", nullable = false)
+    private Article article;
 }

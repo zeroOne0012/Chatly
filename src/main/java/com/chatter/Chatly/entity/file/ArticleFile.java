@@ -1,6 +1,6 @@
 package com.chatter.Chatly.entity.file;
 
-import com.chatter.Chatly.entity.Post;
+import com.chatter.Chatly.entity.Article;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"})) // name = "post_file",  생략
-public class PostFile extends File {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "article_id"})) // name = "article_file",  생략
+public class ArticleFile extends File {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name = "article_id", nullable = false)
+    private Article article;
 }
