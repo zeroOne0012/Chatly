@@ -2,34 +2,70 @@ package com.chatter.Chatly.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-// 모두 허용 
-@EnableWebSecurity
+
+
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .csrf(csrf -> csrf.disable()) // ✅ CSRF 비활성화 (POST 요청을 막지 않도록)
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // ✅ 모든 요청 허용
-                )
-                .formLogin(form -> form.disable()) // ✅ 로그인 폼 비활성화
-                .httpBasic(basic -> basic.disable()); // ✅ 기본 인증 비활성화 (선택)
 
-        return httpSecurity.build();
+        return httpSecurity
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(requests -> {
+                    requests.requestMatchers("/api/auth/login", "/api/user/register").permitAll();
+                    // requests.requestMatchers(HttpMethod.GET, "/api/article/**").permitAll();
+                    requests.requestMatchers("/api/article/**").permitAll();
+                    requests.requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll();
+                    requests.anyRequest().authenticated();
+                })
+                .sessionManagement(
+                        sessionManagement ->
+                                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .build();
     }
 
-    // 비밀번호 BCrypt 암호화 빈 등록
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
+// // 모두 허용 
+// @EnableWebSecurity
+// @Configuration
+// public class SecurityConfig {
+//     @Bean
+//     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+//         httpSecurity
+//                 .csrf(csrf -> csrf.disable()) // ✅ CSRF 비활성화 (POST 요청을 막지 않도록)
+//                 .authorizeHttpRequests(auth -> auth
+//                         .anyRequest().permitAll() // ✅ 모든 요청 허용
+//                 )
+//                 .formLogin(form -> form.disable()) // ✅ 로그인 폼 비활성화
+//                 .httpBasic(basic -> basic.disable()); // ✅ 기본 인증 비활성화 (선택)
+
+//         return httpSecurity.build();
+//     }
+
+//     // 비밀번호 BCrypt 암호화 빈 등록
+//     @Bean
+//     public BCryptPasswordEncoder passwordEncoder() {
+//         return new BCryptPasswordEncoder();
+//     }
+// }
 
 // 특정 url 허용
 // @EnableWebSecurity
