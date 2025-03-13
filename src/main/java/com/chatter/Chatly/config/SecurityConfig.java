@@ -1,5 +1,6 @@
 package com.chatter.Chatly.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,12 +10,23 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.chatter.Chatly.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final UserService userService;
+
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -26,7 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers("/api/auth/login", "/api/user/register").permitAll();
                     // requests.requestMatchers(HttpMethod.GET, "/api/article/**").permitAll();
-                    requests.requestMatchers("/api/article/**").permitAll();
+                    // requests.requestMatchers("/api/article/**").permitAll();
                     requests.requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll();
                     requests.anyRequest().authenticated();
                 })
@@ -34,54 +46,8 @@ public class SecurityConfig {
                         sessionManagement ->
                                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .addFilterBefore(new JwtFilter(userService, secretKey), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 }
-// // 모두 허용 
-// @EnableWebSecurity
-// @Configuration
-// public class SecurityConfig {
-//     @Bean
-//     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-//         httpSecurity
-//                 .csrf(csrf -> csrf.disable()) // ✅ CSRF 비활성화 (POST 요청을 막지 않도록)
-//                 .authorizeHttpRequests(auth -> auth
-//                         .anyRequest().permitAll() // ✅ 모든 요청 허용
-//                 )
-//                 .formLogin(form -> form.disable()) // ✅ 로그인 폼 비활성화
-//                 .httpBasic(basic -> basic.disable()); // ✅ 기본 인증 비활성화 (선택)
-
-//         return httpSecurity.build();
-//     }
-
-//     // 비밀번호 BCrypt 암호화 빈 등록
-//     @Bean
-//     public BCryptPasswordEncoder passwordEncoder() {
-//         return new BCryptPasswordEncoder();
-//     }
-// }
-
-// 특정 url 허용
-// @EnableWebSecurity
-// @Configuration
-// public class SecurityConfig {
-//     @Bean
-//     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-//         httpSecurity
-//                 .csrf(csrf -> csrf.disable())
-//                 .authorizeHttpRequests(auth -> auth
-//                         .requestMatchers("/public/**").permitAll() // ✅ `/public/**` 경로 허용
-//                         .anyRequest().authenticated() // ❌ 나머지는 인증 필요
-//                 )
-//                 .formLogin(withDefaults()) // ✅ 기본 로그인 폼 활성화
-//                 .httpBasic(withDefaults()); // ✅ 기본 인증 활성화
-
-//         return httpSecurity.build();
-//     }
-// }
