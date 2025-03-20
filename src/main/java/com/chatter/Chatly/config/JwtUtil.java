@@ -10,14 +10,16 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+import com.chatter.Chatly.entity.User;
+
 public class JwtUtil {
-    public static String createJwt(String userName, String secretKey, Long expiredMs){
+    public static String createJwt(User user, String secretKey, Long expiredMs){
         // Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         Key key = getSigningKey(secretKey);
 //        Claims claims = Jwts.claims();
 //        claims.put("userName", userName);
         return Jwts.builder()
-                .claim("userName", userName)
+                .claim("user", user)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(key, SignatureAlgorithm.HS256)

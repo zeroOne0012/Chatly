@@ -39,7 +39,7 @@ public class ArticleService {
             throw new IllegalArgumentException("Title and content must be provided");
         }
         Article savedArticle = articleRepository.save(dto.toEntity());
-        if(savedArticle==null) new ResourceNotFoundException("Failed to save article"); // 변경 필요
+        if(savedArticle==null) throw new ResourceNotFoundException("Failed to save article"); // 변경 필요
         return ArticleDto.from(savedArticle);
     }
 

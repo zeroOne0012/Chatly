@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -40,7 +39,8 @@ public class SecurityConfig {
                     // requests.requestMatchers(HttpMethod.GET, "/api/article/**").permitAll();
                     // requests.requestMatchers("/api/article/**").permitAll();
                     requests.requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll();
-                    requests.anyRequest().authenticated();
+                    // requests.anyRequest().authenticated();
+                    requests.anyRequest().permitAll();
                 })
                 .sessionManagement(
                         sessionManagement ->
