@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.chatter.Chatly.entity.file.MessageFile;
-import com.chatter.Chatly.entity.like.MessageLike;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -30,8 +28,8 @@ public class Message {
     private JoinedUser joinedUser;
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MessageLike> likes = new ArrayList<>();
+    private List<Like> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MessageFile> files = new ArrayList<>();
+    private List<Message> files = new ArrayList<>();
 }
