@@ -7,8 +7,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.chatter.Chatly.config.JwtUtil;
-import com.chatter.Chatly.entity.User;
-import com.chatter.Chatly.repository.UserRepository;
+import com.chatter.Chatly.entity.Memeber;
+import com.chatter.Chatly.repository.MemberRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -19,26 +19,23 @@ public class AuthService {
     private String secretKey;
     private final Long expiredMs = 1000 * 60 * 60L;
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    public AuthService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public AuthService(MemberRepository memberRepository, BCryptPasswordEncoder passwordEncoder) {
+        this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     public String login(String id, String password) {
-        // User user = userRepository.findByIdAndPassword(id, bCryptPassword);
-        User user = userRepository.findById(id).orElse(null);
-        if(user==null){
+        // Member member = memberRepository.findByIdAndPassword(id, bCryptPassword);
+        Memeber member = memberRepository.findById(id).orElse(null);
+        if(member==null){
             throw new NoSuchElementException("Check your ID/PSWD");
         }
-        if(!passwordEncoder.matches(password, user.getPassword())){
+        if(!passwordEncoder.matches(password, member.getPassword())){
             throw new NoSuchElementException("Check your ID/PSWD!!!");
         }
 
-        return JwtUtil.createJwt(user, secretKey, expiredMs);
-    }
-
-
-    
+        return JwtUtil.createJwt(member, secretKey, expiredMs);
+    }    
 }

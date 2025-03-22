@@ -1,19 +1,17 @@
 package com.chatter.Chatly.dto;
 
-import com.chatter.Chatly.entity.User;
+import com.chatter.Chatly.entity.Memeber;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserRequestDto {
+public class MemberDto {
     private String id;
-    private String password;
     private String nickname;
     private String email;
-
-    public User toEntity() {
-        return new User(id, password, nickname, email);
+    public static MemberDto from(Memeber member) {
+        return new MemberDto(member.getId(), member.getNickname(), member.getEmail());
     }
 }

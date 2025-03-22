@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "post_id"}),
-    @UniqueConstraint(columnNames = {"user_id", "comment_id"}),
-    @UniqueConstraint(columnNames = {"user_id", "chat_message_id"})
+    @UniqueConstraint(columnNames = {"member_id", "article_id"}),
+    @UniqueConstraint(columnNames = {"member_id", "comment_id"}),
+    @UniqueConstraint(columnNames = {"member_id", "message_id"})
 })
 public class Like {
     @Id
@@ -25,8 +25,8 @@ public class Like {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Memeber member;
 
     @ManyToOne
     @JoinColumn(name = "article_id", nullable = true)
@@ -38,5 +38,5 @@ public class Like {
 
     @ManyToOne
     @JoinColumn(name = "message_id", nullable = true)
-    private Message Message;
+    private Message message;
 }

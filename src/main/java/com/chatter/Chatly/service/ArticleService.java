@@ -30,7 +30,7 @@ public class ArticleService {
 
     public ArticleDto getArticleById(Long id) {
         Article article = articleRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("Member not found with ID: " + id));
         return ArticleDto.from(article);
     }
 

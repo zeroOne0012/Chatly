@@ -11,7 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.chatter.Chatly.service.UserService;
+import com.chatter.Chatly.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserService userService;
+    private final MemberService memberService;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers("/api/auth/login", "/api/user/register").permitAll();
+                    requests.requestMatchers("/api/auth/login", "/api/member/register").permitAll();
                     // requests.requestMatchers(HttpMethod.GET, "/api/article/**").permitAll();
                     // requests.requestMatchers("/api/article/**").permitAll();
                     requests.requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll();
@@ -46,7 +46,7 @@ public class SecurityConfig {
                         sessionManagement ->
                                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(new JwtFilter(userService, secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(memberService, secretKey), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.chatter.Chatly.service.UserService;
+import com.chatter.Chatly.service.MemberService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final UserService userService;
+    private final MemberService memberService;
     private final String secretKey;
 
     @Override
@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
     
         // 로그인과 회원가입 요청은 필터링 X
-        if (path.startsWith("/api/auth/login") || path.startsWith("/api/user/register")) {
+        if (path.startsWith("/api/auth/login") || path.startsWith("/api/member/register")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -57,12 +57,12 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // UserName Token에서 꺼내기
-        String userName = "";
+        // MemberName Token에서 꺼내기
+        String memberName = "";
 
         // 권한 부여
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userName, null, List.of(new SimpleGrantedAuthority("USER")));
+                new UsernamePasswordAuthenticationToken(memberName, null, List.of(new SimpleGrantedAuthority("Member")));
 
         // Detail을 넣어준다.
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
