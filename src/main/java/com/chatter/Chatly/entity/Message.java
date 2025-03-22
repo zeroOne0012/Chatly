@@ -4,10 +4,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.chatter.Chatly.entity.file.MessageFile;
-import com.chatter.Chatly.entity.like.MessageLike;
+import org.springframework.data.annotation.CreatedDate;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,18 +27,24 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column
-    private String msg;
-    @Column
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false)
+    private String message;
+    
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "joined_user_id")
-    private JoinedUser joinedUser;
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom;
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MessageLike> likes = new ArrayList<>();
+    private List<Like> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MessageFile> files = new ArrayList<>();
+    private List<Message> files = new ArrayList<>();
 }

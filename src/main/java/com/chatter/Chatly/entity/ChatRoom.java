@@ -1,7 +1,6 @@
 package com.chatter.Chatly.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -13,20 +12,22 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class JoinedUser {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ChatRoom {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(nullable=false)
+    private String name;
 
     @ManyToOne
     @JoinColumn(name = "channel_id")
     private Channel channel;
 
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    private List<Message> messages;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
 }

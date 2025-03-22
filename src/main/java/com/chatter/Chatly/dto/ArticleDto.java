@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.chatter.Chatly.entity.Article;
-import com.chatter.Chatly.entity.file.ArticleFile;
-import com.chatter.Chatly.entity.like.ArticleLike;
+import com.chatter.Chatly.entity.File;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,7 +32,7 @@ public class ArticleDto {
             article.getCreatedAt(),
             article.getLikes().size(),  // 좋아요 개수
             article.getFiles().stream()
-                .map(ArticleFile::getFileUrl)  // 파일 URL 리스트
+                .map(File::getFileUrl)  // 파일 URL 리스트
                 .collect(Collectors.toList())
         );
     }
