@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화 (@CreatedDate)
-public class JoinedMember {
+public class ChannelMember {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -26,6 +26,10 @@ public class JoinedMember {
     @ManyToOne
     @JoinColumn(name = "channel_id")
     private Channel channel;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;  // 속한 Channel에서의 Member 역할(권한들)
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

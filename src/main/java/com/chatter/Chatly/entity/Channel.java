@@ -32,7 +32,7 @@ public class Channel {
     private String profileUrl;
 
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<JoinedMember> messages = new ArrayList<>();
+    private List<ChannelMember> messages = new ArrayList<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

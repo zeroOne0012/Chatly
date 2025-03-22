@@ -28,9 +28,13 @@ public class Memeber {
     private String email;
     @Column
     private String profileUrl;
+
+    @ManyToOne
+    @JoinColumn(name="role_id")
+    private String role;
     
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<JoinedMember> channels = new ArrayList<>();
+    private List<ChannelMember> channels = new ArrayList<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
