@@ -16,7 +16,7 @@ public class User {
     private String id;
 
     @Column
-    private String password;
+    private String password; // 암호화된 비밀번호 저장
     @Column
     private String nickname;
     @Column(unique = true)
@@ -26,4 +26,18 @@ public class User {
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JoinedUser> channels = new ArrayList<>();
+
+    public User(String id, String password, String nickname, String email) {
+        this.id = id;
+        this.password = password;
+        this.nickname = nickname;
+        this.email = email;
+        this.profileUrl = null; // 프로필 사진 기본값 null?
+    }
+    public void update(User user){
+        this.password = user.password;
+        this.nickname = user.nickname;
+        this.email = user.email;
+        this.profileUrl = user.profileUrl;
+    }
 }
