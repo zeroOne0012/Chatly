@@ -1,6 +1,8 @@
 package com.chatter.Chatly.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -25,11 +27,15 @@ public class ChannelMember {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;  // 속한 Channel에서의 Member 역할(권한들)
+    @OneToMany(mappedBy = "channelMember", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Role> role = new HashSet<>();  // 속한 Channel에서의 Member 역할(권한들)
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    public ChannelMember(Channel channel, Member member){
+        this.channel = channel;
+        this.member = member;
+    }
 }
