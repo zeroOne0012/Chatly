@@ -19,7 +19,7 @@ public class Like {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private Memeber member;
+    private Member member;
 
     @ManyToOne
     @JoinColumn(name = "article_id", nullable = true)

@@ -30,7 +30,7 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private Memeber member;
+    private Member member;
 
     @ManyToOne
     @JoinColumn(name = "chat_room_id")

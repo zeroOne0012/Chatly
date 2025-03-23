@@ -20,11 +20,11 @@ public class Friend {
 
     @ManyToOne
     @JoinColumn(name = "member1_id", nullable=false)
-    private Memeber member1;
+    private Member member1;
 
     @ManyToOne
     @JoinColumn(name = "member2_id", nullable=false)
-    private Memeber member2;
+    private Member member2;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

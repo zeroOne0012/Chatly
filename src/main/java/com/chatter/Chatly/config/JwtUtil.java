@@ -3,6 +3,8 @@ package com.chatter.Chatly.config;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,16 +12,25 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
-import com.chatter.Chatly.entity.Memeber;
+import com.chatter.Chatly.entity.Member;
 
 public class JwtUtil {
-    public static String createJwt(Memeber member, String secretKey, Long expiredMs){
+    public static String createJwt(Member member, String secretKey, Long expiredMs){
         // Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         Key key = getSigningKey(secretKey);
 //        Claims claims = Jwts.claims();
 //        claims.put("memberName", memberName);
+
+        // 필요 정보만 추출
+        Map<String, Object> memberData = new HashMap<>();
+        memberData.put("id", member.getId());
+        memberData.put("email", member.getEmail());
+        memberData.put("nickname", member.getNickname());
+        memberData.put("createdAt", member.getCreatedAt().toString());
+
+
         return Jwts.builder()
-                .claim("member", member)
+                .claim("member", memberData)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(key, SignatureAlgorithm.HS256)

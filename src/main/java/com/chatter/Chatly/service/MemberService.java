@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.chatter.Chatly.dto.MemberDto;
 import com.chatter.Chatly.dto.MemberRequestDto;
-import com.chatter.Chatly.entity.Memeber;
+import com.chatter.Chatly.entity.Member;
 import com.chatter.Chatly.repository.MemberRepository;
 
 import jakarta.transaction.Transactional;
@@ -30,7 +30,7 @@ public class MemberService {
             throw new IllegalArgumentException("Member already exists with Email: " + dto.getEmail());
         }
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
-        Memeber createdMember = memberRepository.save(new Memeber(dto.getId(), encodedPassword, dto.getNickname(), dto.getEmail()));
+        Member createdMember = memberRepository.save(new Member(dto.getId(), encodedPassword, dto.getNickname(), dto.getEmail()));
         return MemberDto.from(createdMember);
     }
 }

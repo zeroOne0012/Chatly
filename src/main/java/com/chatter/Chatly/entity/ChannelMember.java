@@ -19,7 +19,7 @@ public class ChannelMember {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private Memeber member;
+    private Member member;
 
     @ManyToOne
     @JoinColumn(name = "channel_id")

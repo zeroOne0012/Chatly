@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.chatter.Chatly.config.JwtUtil;
-import com.chatter.Chatly.entity.Memeber;
+import com.chatter.Chatly.entity.Member;
 import com.chatter.Chatly.repository.MemberRepository;
 
 import jakarta.transaction.Transactional;
@@ -28,7 +28,7 @@ public class AuthService {
 
     public String login(String id, String password) {
         // Member member = memberRepository.findByIdAndPassword(id, bCryptPassword);
-        Memeber member = memberRepository.findById(id).orElse(null);
+        Member member = memberRepository.findById(id).orElse(null);
         if(member==null){
             throw new NoSuchElementException("Check your ID/PSWD");
         }
