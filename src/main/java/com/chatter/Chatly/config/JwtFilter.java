@@ -2,10 +2,8 @@ package com.chatter.Chatly.config;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;

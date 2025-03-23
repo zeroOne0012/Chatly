@@ -2,7 +2,9 @@ package com.chatter.Chatly.entity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,14 +22,23 @@ public class Channel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private String roomName;
-    @Column(nullable = false)
-    private String profileUrl;
+    private String channelName;
+    @Column
+    private String profileUrl = null;
 
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChannelMember> messages = new ArrayList<>();
+    private Set<ChannelMember> channelMembers = new HashSet<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    public Channel(String channelName){
+        this.channelName = channelName;
+    }
+
+    public void update(Channel channel){
+        this.channelName = channel.channelName;
+        // this.profileUrl = channel.profileUrl;
+    }
 }

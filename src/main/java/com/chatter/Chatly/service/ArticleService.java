@@ -8,6 +8,7 @@ import com.chatter.Chatly.dto.ArticleDto;
 import com.chatter.Chatly.dto.ArticleRequestDto;
 import com.chatter.Chatly.entity.Article;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
+import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.repository.ArticleRepository;
 
 import jakarta.transaction.Transactional;
@@ -39,7 +40,7 @@ public class ArticleService {
             throw new IllegalArgumentException("Title and content must be provided");
         }
         Article savedArticle = articleRepository.save(dto.toEntity());
-        if(savedArticle==null) throw new ResourceNotFoundException("Failed to save article"); // 변경 필요
+        if(savedArticle==null) throw new SaveFailedException("Failed to save article");
         return ArticleDto.from(savedArticle);
     }
 

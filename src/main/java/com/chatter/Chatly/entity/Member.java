@@ -2,12 +2,13 @@ package com.chatter.Chatly.entity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -36,7 +37,7 @@ public class Member {
     private Role role;
     
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChannelMember> channels = new ArrayList<>();
+    private Set<ChannelMember> channels = new HashSet<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

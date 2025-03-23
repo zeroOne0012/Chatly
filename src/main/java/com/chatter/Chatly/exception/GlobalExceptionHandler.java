@@ -20,6 +20,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(SaveFailedException.class)
+    public ResponseEntity<Map<String, String>> handleSaveFailedException(SaveFailedException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Creation Failed");
+        errorResponse.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
     // 잘못된 주소 입력도 500 응답 -> 404 처리 추가 필요
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleException(Exception e) {

@@ -18,12 +18,12 @@ public class ChannelMember {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @ManyToOne
     @JoinColumn(name = "channel_id")
     private Channel channel;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
