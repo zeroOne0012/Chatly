@@ -2,8 +2,10 @@ package com.chatter.Chatly.config;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,25 +37,27 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
-
+        
         final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-
+        
         logger.info("authorization = " + authorization);
-
+        
         if(authorization == null || !authorization.startsWith("Bearer ")){
             logger.error("authorization 이 없습니다.");
             filterChain.doFilter(request, response);
             return;
         }
-
+        
         // Token 꺼내기
         String token = authorization.split(" ")[1];
-
+        
         // Token Expired 되었는지 여부
-        if(JwtUtil.isExpired(token, secretKey)){
-            logger.error("Token 이 만료되었습니다.");
-            filterChain.doFilter(request, response);
+        try{
+            JwtUtil.isExpired(token, secretKey);
+        } catch(Exception e){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\": \"Token expired\"}");
             return;
         }
 

@@ -17,7 +17,8 @@ import jakarta.transaction.Transactional;
 public class AuthService {
     @Value("${jwt.secret}")
     private String secretKey;
-    private final Long expiredMs = 1000 * 60 * 60L;
+    // private final Long expiredMs = 1000 * 60 * 60L;
+    private final Long expiredMs = 1000 * 10L;
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
