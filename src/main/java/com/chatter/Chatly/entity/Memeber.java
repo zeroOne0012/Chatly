@@ -31,7 +31,7 @@ public class Memeber {
 
     @ManyToOne
     @JoinColumn(name="role_id")
-    private String role;
+    private Role role;
     
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChannelMember> channels = new ArrayList<>();
