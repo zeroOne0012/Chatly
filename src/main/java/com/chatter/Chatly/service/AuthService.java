@@ -18,13 +18,19 @@ public class AuthService {
     @Value("${jwt.secret}")
     private String secretKey;
     // private final Long expiredMs = 1000 * 60 * 60L;
-    private final Long expiredMs = 1000 * 10L;
+
+    private Long expiredMs;
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    public AuthService(MemberRepository memberRepository, BCryptPasswordEncoder passwordEncoder) {
+    public AuthService(
+            MemberRepository memberRepository, 
+            BCryptPasswordEncoder passwordEncoder, 
+            @Value("${jwt.token-validity-in-seconds}") String seconds
+        ) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
+        this.expiredMs = 1000L * Integer.parseInt(seconds);
     }
 
     public String login(String id, String password) {

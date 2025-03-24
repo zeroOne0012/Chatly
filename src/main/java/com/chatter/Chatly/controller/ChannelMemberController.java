@@ -25,7 +25,7 @@ public class ChannelMemberController {
         this.channelMemberService = channelMemberService;
     }
 
-    @GetMapping("/{cid}/all")
+    @GetMapping("/all")
     public ResponseEntity<List<ChannelMemberDto>> getAllChannelMembers() {
         List<ChannelMemberDto> channelMembers = channelMemberService.getAllChannelMembers();
         return ResponseEntity.ok(channelMembers);

@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화 (@CreatedDate)
+@Table(
+    uniqueConstraints = @UniqueConstraint(columnNames = {"channel_id", "member_id"})
+)
 public class ChannelMember {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
