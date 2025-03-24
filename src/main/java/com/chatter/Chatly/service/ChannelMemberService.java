@@ -40,14 +40,20 @@ public class ChannelMemberService {
         .toList();
     }
 
-    // public ChannelMemberDto getChannelMemberById(Long id){
-    //     ChannelMember channelMember = channelMemberRepository.findById(id)
-    //     .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found with ID: " + id));
-    //     return ChannelMemberDto.from(channelMember);
-    // }
+    public ChannelMember isJoined(Long channelId, String memberId){
+        Channel channel = channelRepository.findById(channelId).orElse(null);
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if(channel==null || member==null) return null;
+        ChannelMember channelMember = channelMemberRepository.findByChannelAndMember(channel, member)
+        .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found with [channel,member]: [" + channelId + ", " + memberId + "]"));
+        return channelMember;
+        // return ChannelMemberDto.from(channelMember);
+    }
 
     public List<ChannelMemberDto> getChannelMembersByChannelId(Long id){
-        List<ChannelMember> channelMember = channelMemberRepository.findByChannel(id)
+        Channel channel = channelRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Channel not found with id: " + id));
+        List<ChannelMember> channelMember = channelMemberRepository.findByChannel(channel)
         .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found with channel ID: " + id));
         return channelMember.stream()
             .map(ChannelMemberDto::from)
@@ -55,7 +61,9 @@ public class ChannelMemberService {
     }
 
     public List<ChannelMemberDto> getChannelMembersByMemberId(String id){
-        List<ChannelMember> channelMember = channelMemberRepository.findByMember(id)
+        Member member = memberRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + id));
+        List<ChannelMember> channelMember = channelMemberRepository.findByMember(member)
         .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found with member ID: " + id));
         return channelMember.stream()
             .map(ChannelMemberDto::from)
@@ -85,9 +93,9 @@ public class ChannelMemberService {
     //     .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found with ID: " + id));
     // }
     
-    // public void deleteChannelMember(Long cid, String mid) {
-    //     ChannelMember channelMember = channelMemberRepository.findByChannelIdAndMemberId(cid, mid)
-    //     .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found"));
-    //     channelMemberRepository.delete(channelMember);
-    // }
+    public void deleteChannelMember(Long cid, String mid) {
+        ChannelMember channelMember = isJoined(cid, mid);
+        if (channelMember==null) throw new ResourceNotFoundException("ChannelMember not found");
+        channelMemberRepository.delete(channelMember);
+    }
 }

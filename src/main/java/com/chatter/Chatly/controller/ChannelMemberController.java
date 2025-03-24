@@ -48,9 +48,9 @@ public class ChannelMemberController {
         return ResponseEntity.ok(channelMembers);
     }
 
-    // @DeleteMapping("/{cid}/{mid}")
-    // public ResponseEntity<ChannelMemberDto> kickChannelMember(@PathVariable("cid") Long cid, @PathVariable("mid") String mid) {
-    //     channelMemberService.deleteChannelMember(cid, mid);
-    //     return ResponseEntity.noContent().build();
-    // }
+    @DeleteMapping("/{cid}/{mid}")
+    public ResponseEntity<ChannelMemberDto> kickChannelMember(@PathVariable("cid") Long cid, @PathVariable("mid") String mid) {
+        channelMemberService.deleteChannelMember(cid, mid);
+        return ResponseEntity.noContent().build();
+    }
 }
