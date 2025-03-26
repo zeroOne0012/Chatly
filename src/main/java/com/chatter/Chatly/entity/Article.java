@@ -9,10 +9,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화 (@CreatedDate)
 public class Article {
@@ -29,13 +31,17 @@ public class Article {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    // @ManyToOne
+    // @JoinColumn(name = "member_id")
+    // private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "channel_id")
-    private Channel channel;
+    // @ManyToOne
+    // @JoinColumn(name = "channel_id")
+    // private Channel channel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "channel_member_id")
+    private ChannelMember channelMember;
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();

@@ -19,7 +19,7 @@ import com.chatter.Chatly.service.ArticleService;
 
 
 @RestController
-@RequestMapping("/api/article")
+@RequestMapping("/api/channel/{cid}/article")
 public class ArticleController {
     private final ArticleService articleService;
     public ArticleController(ArticleService articleService) {
@@ -27,8 +27,8 @@ public class ArticleController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ArticleDto>> getAllArticle() {
-        List<ArticleDto> articles = articleService.getAllArticle();
+    public ResponseEntity<List<ArticleDto>> getAllArticle(@PathVariable("cid") Long cid) {
+        List<ArticleDto> articles = articleService.getAllArticle(cid);
         return ResponseEntity.ok(articles);
     }
     
@@ -39,8 +39,8 @@ public class ArticleController {
     }
 
     @PostMapping
-    public ResponseEntity<ArticleDto> createArticle(@RequestBody ArticleRequestDto requestDto) {
-        ArticleDto article = articleService.createArticle(requestDto);
+    public ResponseEntity<ArticleDto> createArticle(@PathVariable("cid") Long cid, @RequestBody ArticleRequestDto requestDto) {
+        ArticleDto article = articleService.createArticle(cid, requestDto);
         return ResponseEntity.ok(article);
     }
 

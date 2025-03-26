@@ -1,5 +1,6 @@
 package com.chatter.Chatly.service;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import com.chatter.Chatly.config.JwtUtil;
 import com.chatter.Chatly.entity.Member;
 import com.chatter.Chatly.repository.MemberRepository;
 
+import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -45,4 +47,9 @@ public class AuthService {
 
         return JwtUtil.createJwt(member, secretKey, expiredMs);
     }    
+
+    public String getMemberIdFromRequest(){
+        Claims claim = JwtUtil.getClaims(secretKey);
+        return (String) claim.get("member", Map.class).get("id");
+    }
 }
