@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chatter.Chatly.dto.ArticleDto;
 import com.chatter.Chatly.dto.ArticleRequestDto;
+import com.chatter.Chatly.dto.TargetsDto;
 import com.chatter.Chatly.service.ArticleService;
 
 
@@ -29,6 +30,11 @@ public class ArticleController {
     @GetMapping("/all")
     public ResponseEntity<List<ArticleDto>> getAllArticle(@PathVariable("cid") Long cid) {
         List<ArticleDto> articles = articleService.getAllArticle(cid);
+        return ResponseEntity.ok(articles);
+    }
+    @GetMapping("/all-member")
+    public ResponseEntity<List<ArticleDto>> getAllArticleByMember(@PathVariable("cid") Long cid) {
+        List<ArticleDto> articles = articleService.getAllArticleByMember(cid);
         return ResponseEntity.ok(articles);
     }
     
@@ -50,9 +56,9 @@ public class ArticleController {
         return ResponseEntity.ok(article);
 
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ArticleDto> deleteArticle(@PathVariable("cid") Long cid, @PathVariable("id") Long id) {
-        articleService.deleteArticle(cid, id);
+    @DeleteMapping
+    public ResponseEntity<ArticleDto> deleteArticle(@PathVariable("cid") Long cid, @RequestBody TargetsDto ids) {
+        articleService.deleteArticle(cid, ids);
         return ResponseEntity.noContent().build();
     }
 }

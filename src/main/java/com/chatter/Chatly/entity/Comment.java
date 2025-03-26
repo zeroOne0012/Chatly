@@ -21,12 +21,20 @@ public class Comment {
     private Long id;
 
     @Column(nullable = false)
-    private String comment;
+    private String content;
     
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @ManyToOne
+    @JoinColumn(name="article_id")
+    private Article article;
+
+    @ManyToOne
+    @JoinColumn(name="member_id")
+    private Member member;
+
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> likes = new ArrayList<>();
+    private List<Likes> likes = new ArrayList<>();
 }

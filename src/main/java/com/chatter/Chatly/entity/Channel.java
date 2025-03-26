@@ -26,6 +26,9 @@ public class Channel {
     @Column
     private String profileUrl = null;
 
+    @OneToMany(mappedBy = "channel")
+    private Set<Article> articles = new HashSet<>();
+
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChannelMember> channelMembers = new HashSet<>();
 

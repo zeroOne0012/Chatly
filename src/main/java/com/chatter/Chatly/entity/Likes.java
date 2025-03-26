@@ -18,8 +18,8 @@ public class Likes {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "channel_member_id")
+    private ChannelMember channelMember;
 
     @ManyToOne
     @JoinColumn(name = "article_id", nullable = true)

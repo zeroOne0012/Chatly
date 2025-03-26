@@ -59,16 +59,16 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // MemberName Token에서 꺼내기
-        String memberName = "";
+        // // MemberName Token에서 꺼내기
+        // String memberName = "";
 
-        // 권한 부여
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(memberName, null, List.of(new SimpleGrantedAuthority("Member")));
+        // // 권한 부여
+        // UsernamePasswordAuthenticationToken authenticationToken =
+        //         new UsernamePasswordAuthenticationToken(memberName, null, List.of(new SimpleGrantedAuthority("Member")));
 
-        // Detail을 넣어준다.
-        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        // // Detail을 넣어준다.
+        // authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        // SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request, response);
 
     }

@@ -35,9 +35,15 @@ public class Member {
     @ManyToOne
     @JoinColumn(name="role_id")
     private Role role;
+
+    @OneToMany(mappedBy = "member")
+    private Set<Article> articles = new HashSet<>();
     
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChannelMember> channels = new HashSet<>();
+
+    @OneToMany(mappedBy="member")
+    private Set<Comment> comments = new HashSet<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

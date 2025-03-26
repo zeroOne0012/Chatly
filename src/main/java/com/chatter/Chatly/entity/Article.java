@@ -2,7 +2,9 @@ package com.chatter.Chatly.entity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -31,17 +33,19 @@ public class Article {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // @ManyToOne
-    // @JoinColumn(name = "member_id")
-    // private Member member;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    // @ManyToOne
-    // @JoinColumn(name = "channel_id")
-    // private Channel channel;
+    @ManyToOne
+    @JoinColumn(name = "channel_id")
+    private Channel channel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "channel_member_id")
-    private ChannelMember channelMember;
+    @OneToMany(mappedBy="article", cascade=CascadeType.ALL, orphanRemoval=true)
+    private Set<Comment> comments = new HashSet<>();
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "channel_member_id")
+    // private ChannelMember channelMember;
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Likes> likes = new ArrayList<>();
