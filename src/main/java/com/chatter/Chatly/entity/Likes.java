@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
     @UniqueConstraint(columnNames = {"member_id", "comment_id"}),
     @UniqueConstraint(columnNames = {"member_id", "message_id"})
 })
-public class Like {
+public class Likes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
