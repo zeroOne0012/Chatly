@@ -45,6 +45,14 @@ public class GlobalExceptionHandler {
         errorResponse.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
+    // 잘못된 요청
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<Map<String,String>> handleInvalidRequestException(InvalidRequestException e){
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Bad Request");
+        errorResponse.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 
     // Entity 못찾음
     @ExceptionHandler(NoSuchElementException.class)

@@ -1,6 +1,7 @@
 package com.chatter.Chatly.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import com.chatter.Chatly.dto.ArticleRequestDto;
 import com.chatter.Chatly.entity.Article;
 import com.chatter.Chatly.entity.Channel;
 import com.chatter.Chatly.entity.ChannelMember;
+import com.chatter.Chatly.exception.InvalidRequestException;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.repository.ArticleRepository;
@@ -43,7 +45,7 @@ public class ArticleService {
 
         return channel.getChannelMembers().stream()
         .flatMap(cm -> cm.getArticle().stream())
-        .map(article->ArticleDto.from(article))
+        .map(ArticleDto::from)
         .toList();
 
         // return articleRepository.findAll().stream()
@@ -51,9 +53,12 @@ public class ArticleService {
         // .toList();
     }
 
-    public ArticleDto getArticleById(Long id) {
+    public ArticleDto getArticleById(Long cid, Long id) {
         Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Article not found with ID: " + id));
+        if(!Objects.equals(article.getChannelMember().getChannel().getId(), cid)){ // 채널 아이디 일치하지 않으면
+            throw new InvalidRequestException("Article does not belong to the channel");
+        }
         return ArticleDto.from(article);
     }
 
@@ -64,9 +69,9 @@ public class ArticleService {
         Article article = dto.toEntity();
 
         // 헤더에서 유저 정보 가져오기
-        String memberId = authService.getMemberIdFromRequest();
-        // 유저 & cid -> ChannelMember 
-        ChannelMember channerMember = channelMemberService.isJoined(cid, memberId);
+        String mid = authService.getMemberIdFromRequest();
+        // 유저 & cid -> ChannelMember (유저-채널 연결 정보)
+        ChannelMember channerMember = channelMemberService.isJoined(cid, mid);
         // article에 ChannelMember 등록
         article.setChannelMember(channerMember);
         // save
@@ -75,17 +80,23 @@ public class ArticleService {
         return ArticleDto.from(savedArticle);
     }
 
-    public ArticleDto updateArticle(Long id, ArticleRequestDto requestDto) {
+    public ArticleDto updateArticle(Long cid, Long id, ArticleRequestDto requestDto) {
         Article article = requestDto.toEntity();
         Article target = articleRepository.findById(id)
         .orElseThrow(()-> new ResourceNotFoundException("Article not found with ID: " + id));
+        if(!Objects.equals(target.getChannelMember().getChannel().getId(), cid)){ // 채널 아이디 일치하지 않으면
+            throw new InvalidRequestException("Article does not belong to the channel");
+        }
         target.update(article);
         return ArticleDto.from(target);
     }
     
-    public void deleteArticle(Long id) {
+    public void deleteArticle(Long cid, Long id) {
         Article article = articleRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+        if(!Objects.equals(article.getChannelMember().getChannel().getId(), cid)){ // 채널 아이디 일치하지 않으면
+            throw new InvalidRequestException("Article does not belong to the channel");
+        }
         articleRepository.delete(article); // 영구 삭제 (Hard Delete)
     }
 

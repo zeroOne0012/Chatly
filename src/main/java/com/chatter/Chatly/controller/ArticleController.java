@@ -33,8 +33,8 @@ public class ArticleController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<ArticleDto> getArticleById(@PathVariable("id") Long id) {
-        ArticleDto article = articleService.getArticleById(id);
+    public ResponseEntity<ArticleDto> getArticleById(@PathVariable("cid") Long cid, @PathVariable("id") Long id) {
+        ArticleDto article = articleService.getArticleById(cid, id);
         return ResponseEntity.ok(article);
     }
 
@@ -45,14 +45,14 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ArticleDto> updateArticle(@PathVariable("id") Long id, @RequestBody ArticleRequestDto requestDto) {
-        ArticleDto article = articleService.updateArticle(id, requestDto);
+    public ResponseEntity<ArticleDto> updateArticle(@PathVariable("cid") Long cid, @PathVariable("id") Long id, @RequestBody ArticleRequestDto requestDto) {
+        ArticleDto article = articleService.updateArticle(cid, id, requestDto);
         return ResponseEntity.ok(article);
 
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<ArticleDto> deleteArticle(@PathVariable("id") Long id) {
-        articleService.deleteArticle(id);
+    public ResponseEntity<ArticleDto> deleteArticle(@PathVariable("cid") Long cid, @PathVariable("id") Long id) {
+        articleService.deleteArticle(cid, id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -45,8 +45,7 @@ public class ChannelMember {
     @OneToMany(mappedBy = "channelMember", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Role> role = new HashSet<>();  // 속한 Channel에서의 Member 역할(권한들)
 
-    @OneToMany
-    @JoinColumn(name = "article_id")
+    @OneToMany(mappedBy = "channelMember")
     private List<Article> article;
 
     @CreatedDate
