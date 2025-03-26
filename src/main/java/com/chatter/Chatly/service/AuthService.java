@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.chatter.Chatly.config.JwtUtil;
+import com.chatter.Chatly.entity.ChannelMember;
 import com.chatter.Chatly.entity.Member;
 import com.chatter.Chatly.repository.MemberRepository;
 
@@ -25,13 +26,16 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final ChannelMemberService channelMemberService;
     public AuthService(
             MemberRepository memberRepository, 
             BCryptPasswordEncoder passwordEncoder, 
+            ChannelMemberService channelMemberService,
             @Value("${jwt.token-validity-in-seconds}") String seconds
         ) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
+        this.channelMemberService = channelMemberService;
         this.expiredMs = 1000L * Integer.parseInt(seconds);
     }
 
@@ -48,8 +52,13 @@ public class AuthService {
         return JwtUtil.createJwt(member, secretKey, expiredMs);
     }    
 
-    public String getMemberIdFromRequest(){
+    public String getMemberIdFromRequest(){ // member ID 반환환
         Claims claim = JwtUtil.getClaims(secretKey);
         return (String) claim.get("member", Map.class).get("id");
+    } 
+
+    public ChannelMember getChannelMemberFromRequest(Long cid){ // member-channel 연결 반환
+        String mid = getMemberIdFromRequest();
+        return channelMemberService.isJoined(cid, mid);
     }
 }

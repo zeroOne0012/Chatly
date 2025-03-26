@@ -43,7 +43,9 @@ public class ChannelMemberService {
     public ChannelMember isJoined(Long channelId, String memberId){
         Channel channel = channelRepository.findById(channelId).orElse(null);
         Member member = memberRepository.findById(memberId).orElse(null);
-        if(channel==null || member==null) return null;
+        if(channel==null || member==null) {
+            throw new ResourceNotFoundException("ChannelMember not found with [channel,member]: [" + channelId + ", " + memberId + "]");
+        };
         ChannelMember channelMember = channelMemberRepository.findByChannelAndMember(channel, member)
         .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found with [channel,member]: [" + channelId + ", " + memberId + "]"));
         return channelMember;

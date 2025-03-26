@@ -3,16 +3,12 @@ package com.chatter.Chatly.aop;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
+import com.chatter.Chatly.entity.ChannelMember;
 import com.chatter.Chatly.service.AuthService;
-
-import lombok.RequiredArgsConstructor;
 
 @Aspect
 @Component
@@ -24,13 +20,13 @@ public class RequireCheckAspect {
     }
 
     @Before("(@annotation(requirePrivilege)||@annotation(requireOwnership)) && args(cid,..)")
-    public void requireCheck(JoinPoint joinPoint, RequirePrivilege requirePrivilege, RequireOwnership requireOwnership, Long channelId) {
+    public void requireCheck(JoinPoint joinPoint, RequirePrivilege requirePrivilege, RequireOwnership requireOwnership, Long cid) {
         boolean hasPrivilege = false;
         boolean hasOwnership = false;
 
-        String mid = authService.getMemberIdFromRequest();
+        ChannelMember cm = authService.getChannelMemberFromRequest(cid);
 
-        if(requirePrivilege!=null){ // 관리 권한 확인인 어노테이션션
+        if(requirePrivilege!=null){ // 관리 권한 확인 어노테이션션
             
         }
         //     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
