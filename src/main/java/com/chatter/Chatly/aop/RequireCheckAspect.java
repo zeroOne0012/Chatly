@@ -1,8 +1,11 @@
 package com.chatter.Chatly.aop;
 
+import java.lang.reflect.Method;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -31,15 +34,31 @@ public class RequireCheckAspect {
         this.channelMemberService = channelMemberService;
     }
 
-    @Before("(@annotation(requirePrivilege)||@annotation(requireOwnership)) && args(cid,..)")
-    public void requireCheck(JoinPoint joinPoint, RequirePrivilege requirePrivilege, RequireOwnership requireOwnership, Long cid){
+    @Pointcut("@annotation(com.chatter.Chatly.annotation.RequirePrivilege)")
+    private void requirePrivilege(){}
+    @Pointcut("@annotation(com.chatter.Chatly.annotation.RequireOwnership))")
+    private void requireOwnership(){}
+    
+    // @Before("requireOwnership()")
+    // public void testAtop(String string){
+    //     System.out.println("AOP WORKS!!");
+    // }
+    
+    @Before("(requirePrivilege() || requireOwnership())")
+    public void requireCheck(JoinPoint joinPoint){
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        RequirePrivilege requirePrivilege = method.getAnnotation(RequirePrivilege.class);
+        RequireOwnership requireOwnership = method.getAnnotation(RequireOwnership.class);
+
         boolean hasPrivilege = false;
         boolean hasOwnership = false;
-        
-        
+
         // 채널 관련 권한 검사
         if(requirePrivilege!=null){ // 관리 권한 확인 어노테이션
+            Long cid = (Long)joinPoint.getArgs()[0]; // url의 첫 인자: cid
             ChannelMember cm = authService.getChannelMemberFromRequest(cid);
+            if(cm==null) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
             Role role = cm.getRole();
             if(role==Role.ADMIN || role==Role.MODERATOR){
                 hasPrivilege=true;
@@ -90,7 +109,8 @@ public class RequireCheckAspect {
 
     // 읽기 권한 - 채널에 속함 검사
     @Before("(@annotation(checkPermissionToRead) && args(cid,..))")
-    public void checkPermission(JoinPoint joinPoint, Long cid){
+    public void checkPermission(JoinPoint joinPoint){
+        Long cid = (Long)joinPoint.getArgs()[0]; // url의 첫 인자: cid
         String memberId = authService.getMemberIdFromRequest();
         if(channelMemberService.isJoined(cid, memberId)==null){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");

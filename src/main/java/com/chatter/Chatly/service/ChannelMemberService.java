@@ -46,10 +46,8 @@ public class ChannelMemberService {
         if(channel==null || member==null) {
             throw new ResourceNotFoundException("ChannelMember not found with [channel,member]: [" + channelId + ", " + memberId + "]");
         };
-        ChannelMember channelMember = channelMemberRepository.findByChannelAndMember(channel, member)
-        .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found with [channel,member]: [" + channelId + ", " + memberId + "]"));
+        ChannelMember channelMember = channelMemberRepository.findByChannelAndMember(channel, member).orElse(null);
         return channelMember;
-        // return ChannelMemberDto.from(channelMember);
     }
 
     public List<ChannelMemberDto> getChannelMembersByChannelId(Long id){
