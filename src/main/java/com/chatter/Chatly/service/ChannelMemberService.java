@@ -8,11 +8,13 @@ import com.chatter.Chatly.dto.ChannelMemberDto;
 import com.chatter.Chatly.entity.Channel;
 import com.chatter.Chatly.entity.ChannelMember;
 import com.chatter.Chatly.entity.Member;
+import com.chatter.Chatly.entity.Role;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.repository.ChannelMemberRepository;
 import com.chatter.Chatly.repository.ChannelRepository;
 import com.chatter.Chatly.repository.MemberRepository;
+import com.chatter.Chatly.repository.RoleRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +26,17 @@ public class ChannelMemberService {
     private final ChannelMemberRepository channelMemberRepository;
     private final MemberRepository memberRepository;
     private final ChannelRepository channelRepository;
+    private final RoleRepository roleRepository;
     public ChannelMemberService(
         ChannelMemberRepository channelMemberRepository,
         MemberRepository memberRepository,
-        ChannelRepository channelRepository
+        ChannelRepository channelRepository,
+        RoleRepository roleRepository
         ){
         this.channelMemberRepository = channelMemberRepository;
         this.memberRepository = memberRepository;
         this.channelRepository = channelRepository;
+        this.roleRepository = roleRepository;
     }
 
     public List<ChannelMemberDto> getAllChannelMembers() {
@@ -80,9 +85,23 @@ public class ChannelMemberService {
             .orElseThrow(() -> new ResourceNotFoundException("Member not found with ID: " + id)))
             .toList();
 
+
+        // List<ChannelMember> created = members.stream()
+        //     .map(member -> channelMemberRepository.save(new ChannelMember(channel, member)))
+        //     .toList();
+
         List<ChannelMember> created = members.stream()
-            .map(member -> channelMemberRepository.save(new ChannelMember(channel, member)))
-            .toList();
+        .map(member -> {
+            ChannelMember channelMember = new ChannelMember(channel, member);
+            
+            Role role = channelMember.getRole();
+            roleRepository.save(role);
+            
+            return channelMemberRepository.save(channelMember);
+        })
+        .toList();
+
+
         if(created==null || created.size()!=members_id.size()) throw new SaveFailedException("Failed to create ChannelMember"); // Dead Code?
         return created;
     }
