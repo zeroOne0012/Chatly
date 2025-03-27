@@ -8,6 +8,7 @@ import com.chatter.Chatly.dto.ChannelDto;
 import com.chatter.Chatly.dto.ChannelRequestDto;
 import com.chatter.Chatly.entity.Channel;
 import com.chatter.Chatly.entity.ChannelMember;
+import com.chatter.Chatly.entity.Role;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.repository.ChannelRepository;
@@ -54,7 +55,7 @@ public class ChannelService {
         if(cm.size()!=1){
             throw new RuntimeException("cm.size() must be 1");
         }
-        cm.getFirst().getRole().setName("admin");
+        cm.getFirst().setRole(Role.ADMIN);
         return ChannelDto.from(created);
     }
 

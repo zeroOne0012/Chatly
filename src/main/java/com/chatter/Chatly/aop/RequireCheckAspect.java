@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
 import com.chatter.Chatly.entity.ChannelMember;
+import com.chatter.Chatly.entity.Role;
 import com.chatter.Chatly.service.AuthService;
 
 @Aspect
@@ -29,8 +30,8 @@ public class RequireCheckAspect {
         ChannelMember cm = authService.getChannelMemberFromRequest(cid);
 
         if(requirePrivilege!=null){ // 관리 권한 확인 어노테이션
-            String roleName = cm.getRole().getName();
-            if(roleName.equals("admin") || roleName.equals("assistant")){
+            Role role = cm.getRole();
+            if(role==Role.ADMIN || role==Role.MODERATOR){
                 hasPrivilege=true;
             }
         }

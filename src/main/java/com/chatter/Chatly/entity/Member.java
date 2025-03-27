@@ -32,10 +32,6 @@ public class Member {
     @Column
     private String profileUrl;
 
-    @ManyToOne
-    @JoinColumn(name="role_id")
-    private Role role;
-
     @OneToMany(mappedBy = "member")
     private Set<Article> articles = new HashSet<>();
     
