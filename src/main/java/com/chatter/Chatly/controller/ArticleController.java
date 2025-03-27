@@ -69,7 +69,7 @@ public class ArticleController {
 
     @DeleteMapping
     @RequirePrivilege
-    @RequireOwnership(entityClass = Article.class, idParam = "id")
+    @RequireOwnership(entityClass = Article.class, idParam = "ids")
     public ResponseEntity<ArticleDto> deleteArticle(@PathVariable("cid") Long cid, @RequestBody TargetsDto ids) {
         articleService.deleteArticle(cid, ids);
         return ResponseEntity.noContent().build();

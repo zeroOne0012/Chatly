@@ -1,6 +1,8 @@
 package com.chatter.Chatly.aop;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
+import com.chatter.Chatly.dto.TargetsDto;
 import com.chatter.Chatly.entity.ChannelMember;
 import com.chatter.Chatly.entity.Ownable;
 import com.chatter.Chatly.entity.Role;
@@ -75,33 +78,59 @@ public class RequireCheckAspect {
             String[] paramNames = methodSignature.getParameterNames();
             Object[] args = joinPoint.getArgs();
 
-            Long entityId = null;
+            List<Long> entityId = new ArrayList<>();
             for (int i = 0; i < paramNames.length; i++) {
                 if (paramNames[i].equals(idParamName)) {
-                    entityId = (Long) args[i];
+                    // if(args[i] instanceof Long){ // null 체크 포함
+                    //     entityId.add((Long) args[i]);
+                    if(args[i] instanceof Long aLong){ // null 체크 포함
+                        entityId.add(aLong);
+
+                    // } else if (args[i] instanceof List<?>){
+                    //     List<?> argList = (List<?>) args[i];
+                    //     if (!argList.isEmpty() && argList.getFirst() instanceof Long) {
+                    //         entityId.addAll(argList.stream().map(eid->(Long)eid).toList());
+                    //     }
+                    } else if (args[i] instanceof TargetsDto){
+                        List<?> argList = (List<?>) ((TargetsDto)args[i]).getLst();
+                        if (!argList.isEmpty() && argList.getFirst() instanceof Long) {
+                            entityId.addAll(argList.stream().map(eid->(Long)eid).toList());
+                        }
+                        
+                    } else{
+                        throw new RuntimeException("Unexpected paramName");
+                    }
                     break;
                 }
             }
 
-            if (entityId == null) {
+            if (entityId.isEmpty()) {
                 throw new IllegalArgumentException("cannot find Entity ID");
             }
 
-            // Entity 조회
-            Object entity = entityManager.find(entityClass, entityId);
+            // final boolean[] noOwnership = {false};
+            // noOwnership[0] = true;
+            hasOwnership = !entityId.stream()
+                .anyMatch(eid -> { // anyMatch: 조건 맞으면 중단(return boolean), stream() 안에서 break 불가
+                    // Entity 조회
+                    Object entity = entityManager.find(entityClass, eid);
 
-            if (!(entity instanceof Ownable)) {
-                throw new IllegalArgumentException("Entity does not implement Ownable");
-            }
+                    if (entity==null) {
+                        throw new IllegalArgumentException("cannot find entity");
+                    }
+                    if (!(entity instanceof Ownable)) {
+                        throw new IllegalArgumentException("Entity does not implement Ownable");
+                    }
 
-            String targetEntitysMemberId = (String) ((Ownable) entity).getOwnerId();
-            String requestersMemberId = authService.getMemberIdFromRequest();
-        
-            if (targetEntitysMemberId.equals(requestersMemberId)) {
-                hasOwnership = true;
-            }
+                    String targetEntitysMemberId = (String) ((Ownable<?>) entity).getOwnerId();
+                    String requestersMemberId = authService.getMemberIdFromRequest();
+                    
+                    // 본인 것 외의 entity 감지
+                    // anyMatch: true를 만나야 종료 -> true로 반환 후 반전하여 사용
+                    return !targetEntitysMemberId.equals(requestersMemberId);
+                });
+            
         }
-
         if(!(hasPrivilege||hasOwnership)){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
