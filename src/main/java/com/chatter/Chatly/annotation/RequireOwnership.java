@@ -8,5 +8,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequireOwnership {
-    
+    Class<?> entityClass();       // 어떤 Entity인지
+    String idParam();             // 어떤 파라미터가 ID인지
 }

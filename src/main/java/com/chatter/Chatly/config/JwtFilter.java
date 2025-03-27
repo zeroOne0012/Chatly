@@ -2,6 +2,7 @@ package com.chatter.Chatly.config;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,16 +60,17 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // // MemberName Token에서 꺼내기
-        // String memberName = "";
 
-        // // 권한 부여
-        // UsernamePasswordAuthenticationToken authenticationToken =
-        //         new UsernamePasswordAuthenticationToken(memberName, null, List.of(new SimpleGrantedAuthority("Member")));
+        // MemberName Token에서 꺼내기
+        String memberName = (String) JwtUtil.getClaims(secretKey).get("member", Map.class).get("id");
 
-        // // Detail을 넣어준다.
-        // authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        // SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        // 권한 부여
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(memberName, null, List.of(new SimpleGrantedAuthority("Member")));
+
+        // Detail을 넣어준다.
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request, response);
 
     }

@@ -3,7 +3,6 @@ package com.chatter.Chatly.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -38,9 +37,9 @@ public class SecurityConfig {
                     requests.requestMatchers("/api/auth/login", "/api/member/register").permitAll();
                     // requests.requestMatchers(HttpMethod.GET, "/api/article/**").permitAll();
                     // requests.requestMatchers("/api/article/**").permitAll();
-                    requests.requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll();
-                    // requests.anyRequest().authenticated();
-                    requests.anyRequest().permitAll();
+                    // requests.requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll();
+                    requests.anyRequest().authenticated();
+                    // requests.anyRequest().permitAll();
                 })
                 .sessionManagement(
                         sessionManagement ->

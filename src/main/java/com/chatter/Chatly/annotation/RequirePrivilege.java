@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequirePrivilege {
-    String value(); // 권한
+    // String value(); // 권한
 }
