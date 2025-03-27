@@ -72,7 +72,7 @@ public class ChannelMemberService {
             .toList();
     }
 
-    public List<ChannelMemberDto> createChannelMembers(Long channel_id, List<String> members_id){
+    public List<ChannelMember> createChannelMembersReturnsEntity(Long channel_id, List<String> members_id){
         Channel channel = channelRepository.findById(channel_id)
         .orElseThrow(() -> new ResourceNotFoundException("Channel not found with ID: " + channel_id));
         List<Member> members = members_id.stream()
@@ -84,7 +84,11 @@ public class ChannelMemberService {
             .map(member -> channelMemberRepository.save(new ChannelMember(channel, member)))
             .toList();
         if(created==null || created.size()!=members_id.size()) throw new SaveFailedException("Failed to create ChannelMember"); // Dead Code?
-        
+        return created;
+    }
+
+    public List<ChannelMemberDto> createChannelMembers(Long channel_id, List<String> members_id){
+        List<ChannelMember> created = createChannelMembersReturnsEntity(channel_id, members_id);
         return created.stream()
             .map(ChannelMemberDto::from)
             .toList();

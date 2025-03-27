@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화 (@CreatedDate)
-public class Article {
+public class Article implements Ownable<String>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -62,5 +62,10 @@ public class Article {
         this.content = article.content;
         this.files.clear(); // 깊은 복사; 기존 리스트 비우고 새 파일 리스트 추가가
         this.files.addAll(article.files); // 얉은 복사 시 orphanRemoval = true가 설정되어 있으면 자동 삭제?
+    }
+
+    @Override
+    public String getOwnerId(){
+        return member.getId();
     }
 }

@@ -3,7 +3,9 @@ package com.chatter.Chatly.aop;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
@@ -20,14 +22,25 @@ public class RequireCheckAspect {
     }
 
     @Before("(@annotation(requirePrivilege)||@annotation(requireOwnership)) && args(cid,..)")
-    public void requireCheck(JoinPoint joinPoint, RequirePrivilege requirePrivilege, RequireOwnership requireOwnership, Long cid) {
+    public void requireCheck(JoinPoint joinPoint, RequirePrivilege requirePrivilege, RequireOwnership requireOwnership, Long cid){
         boolean hasPrivilege = false;
         boolean hasOwnership = false;
 
         ChannelMember cm = authService.getChannelMemberFromRequest(cid);
 
-        if(requirePrivilege!=null){ // 관리 권한 확인 어노테이션션
-            
+        if(requirePrivilege!=null){ // 관리 권한 확인 어노테이션
+            String roleName = cm.getRole().getName();
+            if(roleName.equals("admin") || roleName.equals("assistant")){
+                hasPrivilege=true;
+            }
+        }
+
+        if(requireOwnership!=null){ // 본인 확인 어노테이션
+            // some logic
+        }
+
+        if(!(hasPrivilege||hasOwnership)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "접근이 거부되었습니다.");
         }
         //     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     //     String memberId = (String) auth.getPrincipal(); // JWT에서 추출된 memberId
@@ -38,7 +51,9 @@ public class RequireCheckAspect {
     //     }
     // }
     }
+
+    @Before("(@annotation(checkPermissionToRead) && args(cid,..))")
+    public void checkPermission(JoinPoint joinPoint){
+        
+    }
 }
-
-// 채널마다 권한 설정: ChannelMemberService 구현 -> 위 클래스 등록 -> @RequirePrivilege("SOME_PRIVILEGE") 실제 사용
-

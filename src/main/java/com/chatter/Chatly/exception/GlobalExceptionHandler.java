@@ -8,9 +8,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, String>> handleResponseStatusException(ResponseStatusException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", e.getReason()); // 예: "접근 권한이 없습니다."
+
+        return ResponseEntity
+                .status(e.getStatusCode())
+                .body(errorResponse);
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException e) {
@@ -28,7 +39,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-    // 잘못된 주소 입력도 500 응답 -> 404 처리 추가 필요
+    // 500 INTERNAL SERVER ERROR
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleException(Exception e) {
         Map<String, String> errorResponse = new HashMap<>();
