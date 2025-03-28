@@ -44,4 +44,7 @@ public class ChannelMember {
     public void setRole(Role role){
         this.role = role;
     }
+    public boolean hasPrivilege(){
+        return this.role==Role.ADMIN || this.role==Role.MODERATOR;
+    }
 }

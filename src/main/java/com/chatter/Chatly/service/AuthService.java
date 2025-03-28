@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class AuthService {
     public AuthService(
             MemberRepository memberRepository, 
             BCryptPasswordEncoder passwordEncoder, 
-            ChannelMemberService channelMemberService,
+            @Lazy ChannelMemberService channelMemberService, // 순환 참조 임시 해결
             @Value("${jwt.token-validity-in-seconds}") String seconds
         ) {
         this.memberRepository = memberRepository;

@@ -8,6 +8,7 @@ import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
 import com.chatter.Chatly.dto.ChannelMemberDto;
 import com.chatter.Chatly.dto.ChannelMemberRequestDto;
+import com.chatter.Chatly.dto.RoleRequestDto;
 import com.chatter.Chatly.entity.Article;
 import com.chatter.Chatly.service.ChannelMemberService;
 
@@ -16,6 +17,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 // import org.springframework.web.bind.annotation.PutMapping;
@@ -54,10 +56,14 @@ public class ChannelMemberController {
         List<ChannelMemberDto> channelMembers = channelMemberService.createChannelMembers(dto.getChannelId(), dto.getMemberId());
         return ResponseEntity.ok(channelMembers);
     }
+    
+    @PatchMapping("/{cid}")
+    public ResponseEntity<List<ChannelMemberDto>> changeMembersRole(@PathVariable("cid") Long cid, @RequestBody RoleRequestDto dto) {
+        List<ChannelMemberDto> channelMembers = channelMemberService.updateChannelMembers(cid, dto.getMemberId(), dto.getRole());
+        return ResponseEntity.ok(channelMembers);
+    }
 
     @DeleteMapping("/{cid}/{mid}")
-    @RequirePrivilege
-    @RequireOwnership(entityClass = Article.class, idParam = "mid")
     public ResponseEntity<ChannelMemberDto> kickChannelMember(@PathVariable("cid") Long cid, @PathVariable("mid") String mid) {
         channelMemberService.deleteChannelMember(cid, mid);
         return ResponseEntity.noContent().build();

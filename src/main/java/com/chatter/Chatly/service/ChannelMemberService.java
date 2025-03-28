@@ -1,13 +1,17 @@
 package com.chatter.Chatly.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.chatter.Chatly.dto.ChannelMemberDto;
 import com.chatter.Chatly.entity.Channel;
 import com.chatter.Chatly.entity.ChannelMember;
 import com.chatter.Chatly.entity.Member;
+import com.chatter.Chatly.entity.Role;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.repository.ChannelMemberRepository;
@@ -24,14 +28,17 @@ public class ChannelMemberService {
     private final ChannelMemberRepository channelMemberRepository;
     private final MemberRepository memberRepository;
     private final ChannelRepository channelRepository;
+    private final AuthService authService;
     public ChannelMemberService(
         ChannelMemberRepository channelMemberRepository,
         MemberRepository memberRepository,
-        ChannelRepository channelRepository
+        ChannelRepository channelRepository,
+        AuthService authService
         ){
         this.channelMemberRepository = channelMemberRepository;
         this.memberRepository = memberRepository;
         this.channelRepository = channelRepository;
+        this.authService = authService;
     }
 
     public List<ChannelMemberDto> getAllChannelMembers() {
@@ -88,6 +95,10 @@ public class ChannelMemberService {
     }
 
     public List<ChannelMemberDto> createChannelMembers(Long channel_id, List<String> members_id){
+        String requestMemberId = authService.getMemberIdFromRequest();
+        if(isJoined(channel_id, requestMemberId)==null){ // 채널에 속하지 않은 사용자가 초대 요청한다면
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied"); // 요청 거부
+        }
         List<ChannelMember> created = createChannelMembersReturnsEntity(channel_id, members_id);
         return created.stream()
             .map(ChannelMemberDto::from)
@@ -98,10 +109,37 @@ public class ChannelMemberService {
     //     ChannelMember channelMember = channelMemberRepository.findById(id)
     //     .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found with ID: " + id));
     // }
+
+    // 권한 변경
+    public List<ChannelMemberDto> updateChannelMembers(Long cid, List<String> memberId, Role role) {
+        return memberId.stream()
+        .map(mid->{
+            ChannelMember channelMember = isJoined(cid, mid); 
+            if (channelMember==null) throw new ResourceNotFoundException("ChannelMember not found");
+
+            throwExceptionIfNoEditPrivilege(channelMember, cid, mid); // 권한 점검
+
+            channelMember.setRole(role); // 권한 변경
+
+            return ChannelMemberDto.from(channelMember);
+        })
+        .collect(Collectors.toList());
+    }
     
     public void deleteChannelMember(Long cid, String mid) {
-        ChannelMember channelMember = isJoined(cid, mid);
+        ChannelMember channelMember = isJoined(cid, mid); 
         if (channelMember==null) throw new ResourceNotFoundException("ChannelMember not found");
+        throwExceptionIfNoEditPrivilege(channelMember, cid, mid);
         channelMemberRepository.delete(channelMember);
     }
+
+    private void throwExceptionIfNoEditPrivilege(ChannelMember channelMember, Long cid, String mid){
+        String requestMemberId = authService.getMemberIdFromRequest();
+        ChannelMember requestMembersConnection = isJoined(channelMember.getChannel().getId(), requestMemberId);
+        if (!channelMember.getMember().getId().equals(requestMemberId) && // 본인이 아니면서
+            !(requestMembersConnection!=null && requestMembersConnection.hasPrivilege())){ // 같은 채널의 관리자도 아니면
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied"); // 채널 연결 삭제 요청 거부
+        }
+    }
+
 }
