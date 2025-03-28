@@ -18,7 +18,7 @@ import com.chatter.Chatly.annotation.RequirePrivilege;
 import com.chatter.Chatly.dto.TargetsDto;
 import com.chatter.Chatly.entity.ChannelMember;
 import com.chatter.Chatly.entity.Ownable;
-import com.chatter.Chatly.entity.Role;
+import com.chatter.Chatly.enums.Role;
 import com.chatter.Chatly.service.AuthService;
 import com.chatter.Chatly.service.ChannelMemberService;
 
@@ -137,7 +137,7 @@ public class RequireCheckAspect {
     }
 
     // 읽기 권한 - 채널에 속함 검사
-    @Before("@annotation(com.chatter.Chatly.annotation.CheckPermissionToRead)")
+    @Before("@annotation(com.chatter.Chatly.annotation.CheckAccessPossession)")
     public void checkPermission(JoinPoint joinPoint){
         Long cid = (Long)joinPoint.getArgs()[0]; // url의 첫 인자: cid
         String memberId = authService.getMemberIdFromRequest();

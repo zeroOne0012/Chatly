@@ -10,7 +10,6 @@ import com.chatter.Chatly.dto.ArticleRequestDto;
 import com.chatter.Chatly.dto.TargetsDto;
 import com.chatter.Chatly.entity.Article;
 import com.chatter.Chatly.entity.Channel;
-import com.chatter.Chatly.entity.ChannelMember;
 import com.chatter.Chatly.entity.Member;
 import com.chatter.Chatly.exception.InvalidRequestException;
 import com.chatter.Chatly.exception.ResourceNotFoundException;

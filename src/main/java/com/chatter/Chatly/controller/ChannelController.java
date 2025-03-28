@@ -3,12 +3,9 @@ package com.chatter.Chatly.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
 import com.chatter.Chatly.dto.ChannelDto;
 import com.chatter.Chatly.dto.ChannelRequestDto;
-import com.chatter.Chatly.entity.Article;
-import com.chatter.Chatly.entity.Channel;
 import com.chatter.Chatly.service.ChannelService;
 
 import java.util.List;

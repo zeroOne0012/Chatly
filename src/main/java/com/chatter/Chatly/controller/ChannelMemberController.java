@@ -3,13 +3,10 @@ package com.chatter.Chatly.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chatter.Chatly.annotation.CheckPermissionToRead;
-import com.chatter.Chatly.annotation.RequireOwnership;
-import com.chatter.Chatly.annotation.RequirePrivilege;
+import com.chatter.Chatly.annotation.CheckAccessPossession;
 import com.chatter.Chatly.dto.ChannelMemberDto;
 import com.chatter.Chatly.dto.ChannelMemberRequestDto;
 import com.chatter.Chatly.dto.RoleRequestDto;
-import com.chatter.Chatly.entity.Article;
 import com.chatter.Chatly.service.ChannelMemberService;
 
 import java.util.List;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -39,13 +35,13 @@ public class ChannelMemberController {
     }
 
     @GetMapping("/channel/{cid}")
-    @CheckPermissionToRead
+    @CheckAccessPossession
     public ResponseEntity<List<ChannelMemberDto>> getChannelMembersByChannelId(@PathVariable("cid") Long id) {
         List<ChannelMemberDto> channelMembers = channelMemberService.getChannelMembersByChannelId(id);
         return ResponseEntity.ok(channelMembers);
     }
     @GetMapping("/channel/{cid}/member/{mid}")
-    @CheckPermissionToRead
+    @CheckAccessPossession
     public ResponseEntity<List<ChannelMemberDto>> getChannelMembersByMemberId(@PathVariable("cid") Long cid, @PathVariable("mid") String id) {
         List<ChannelMemberDto> channelMembers = channelMemberService.getChannelMembersByMemberId(id);
         return ResponseEntity.ok(channelMembers);

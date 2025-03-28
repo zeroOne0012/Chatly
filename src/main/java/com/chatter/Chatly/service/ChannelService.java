@@ -8,12 +8,10 @@ import com.chatter.Chatly.dto.ChannelDto;
 import com.chatter.Chatly.dto.ChannelRequestDto;
 import com.chatter.Chatly.entity.Channel;
 import com.chatter.Chatly.entity.ChannelMember;
-import com.chatter.Chatly.entity.Role;
+import com.chatter.Chatly.enums.Role;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.repository.ChannelRepository;
-import com.chatter.Chatly.service.AuthService;
-import com.chatter.Chatly.service.ChannelMemberService;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +57,7 @@ public class ChannelService {
         return ChannelDto.from(created);
     }
 
-        public ChannelDto updateChannel(Long id, ChannelRequestDto dto) {
+    public ChannelDto updateChannel(Long id, ChannelRequestDto dto) {
         Channel channel = dto.toEntity();
         Channel target = channelRepository.findById(id)
         .orElseThrow(()-> new ResourceNotFoundException("Channel not found with ID: " + id));

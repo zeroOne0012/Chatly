@@ -1,4 +1,4 @@
-package com.chatter.Chatly.entity;
+package com.chatter.Chatly.enums;
 
 public enum Role {
     ADMIN,

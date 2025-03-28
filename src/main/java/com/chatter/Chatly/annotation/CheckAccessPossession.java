@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 // 채널에 속해 읽을 권한을 갖는지 검사
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CheckPermissionToRead {
+public @interface CheckAccessPossession{
     
 }

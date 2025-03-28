@@ -1,7 +1,5 @@
 package com.chatter.Chatly.dto;
 
-import com.chatter.Chatly.entity.ChannelMember;
-
 import java.util.List;
 
 import lombok.AllArgsConstructor;

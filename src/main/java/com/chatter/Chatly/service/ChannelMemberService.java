@@ -11,7 +11,7 @@ import com.chatter.Chatly.dto.ChannelMemberDto;
 import com.chatter.Chatly.entity.Channel;
 import com.chatter.Chatly.entity.ChannelMember;
 import com.chatter.Chatly.entity.Member;
-import com.chatter.Chatly.entity.Role;
+import com.chatter.Chatly.enums.Role;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.repository.ChannelMemberRepository;

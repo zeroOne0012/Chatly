@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.chatter.Chatly.entity.Channel;
-import com.chatter.Chatly.entity.ChannelMember;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -2,7 +2,7 @@ package com.chatter.Chatly.dto;
 
 import java.util.List;
 
-import com.chatter.Chatly.entity.Role;
+import com.chatter.Chatly.enums.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

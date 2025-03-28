@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chatter.Chatly.annotation.CheckPermissionToRead;
+import com.chatter.Chatly.annotation.CheckAccessPossession;
 import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
 import com.chatter.Chatly.dto.ArticleDto;
@@ -32,27 +32,28 @@ public class ArticleController {
     }
 
     @GetMapping("/all")
-    @CheckPermissionToRead
+    @CheckAccessPossession
     public ResponseEntity<List<ArticleDto>> getAllArticle(@PathVariable("cid") Long cid) {
         List<ArticleDto> articles = articleService.getAllArticle(cid);
         return ResponseEntity.ok(articles);
     }
 
     @GetMapping("/all-member")
-    @CheckPermissionToRead
+    @CheckAccessPossession
     public ResponseEntity<List<ArticleDto>> getAllArticleByMember(@PathVariable("cid") Long cid) {
         List<ArticleDto> articles = articleService.getAllArticleByMember(cid);
         return ResponseEntity.ok(articles);
     }
     
     @GetMapping("/{id}")
-    @CheckPermissionToRead
+    @CheckAccessPossession
     public ResponseEntity<ArticleDto> getArticleById(@PathVariable("cid") Long cid, @PathVariable("id") Long id) {
         ArticleDto article = articleService.getArticleById(cid, id);
         return ResponseEntity.ok(article);
     }
 
     @PostMapping
+    @CheckAccessPossession
     public ResponseEntity<ArticleDto> createArticle(@PathVariable("cid") Long cid, @RequestBody ArticleRequestDto requestDto) {
         ArticleDto article = articleService.createArticle(cid, requestDto);
         return ResponseEntity.ok(article);
