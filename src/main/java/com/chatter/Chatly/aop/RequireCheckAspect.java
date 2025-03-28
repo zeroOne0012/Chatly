@@ -137,7 +137,7 @@ public class RequireCheckAspect {
     }
 
     // 읽기 권한 - 채널에 속함 검사
-    @Before("(@annotation(checkPermissionToRead) && args(cid,..))")
+    @Before("@annotation(com.chatter.Chatly.annotation.CheckPermissionToRead)")
     public void checkPermission(JoinPoint joinPoint){
         Long cid = (Long)joinPoint.getArgs()[0]; // url의 첫 인자: cid
         String memberId = authService.getMemberIdFromRequest();
