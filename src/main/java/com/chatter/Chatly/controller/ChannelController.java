@@ -3,8 +3,12 @@ package com.chatter.Chatly.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chatter.Chatly.annotation.RequireOwnership;
+import com.chatter.Chatly.annotation.RequirePrivilege;
 import com.chatter.Chatly.dto.ChannelDto;
 import com.chatter.Chatly.dto.ChannelRequestDto;
+import com.chatter.Chatly.entity.Article;
+import com.chatter.Chatly.entity.Channel;
 import com.chatter.Chatly.service.ChannelService;
 
 import java.util.List;
@@ -44,12 +48,16 @@ public class ChannelController {
     }
 
     @PutMapping("/{id}")
+    @RequirePrivilege
+    // @RequireOwnership(entityClass = Channel.class, idParam = "id")
     public ResponseEntity<ChannelDto> updateChannel(@PathVariable("id") Long id, @RequestBody ChannelRequestDto dto) {
         ChannelDto channel = channelService.updateChannel(id, dto);
         return ResponseEntity.ok(channel);
 
     }
     @DeleteMapping("/{id}")
+    @RequirePrivilege
+    // @RequireOwnership(entityClass = Channel.class, idParam = "id")
     public ResponseEntity<ChannelDto> deleteChannel(@PathVariable("id") Long id) {
         channelService.deleteChannel(id);
         return ResponseEntity.noContent().build();
