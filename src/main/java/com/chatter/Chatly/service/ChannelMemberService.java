@@ -130,6 +130,13 @@ public class ChannelMemberService {
         ChannelMember channelMember = isJoined(cid, mid); 
         if (channelMember==null) throw new ResourceNotFoundException("ChannelMember not found");
         throwExceptionIfNoEditPrivilege(channelMember, cid, mid);
+        if(channelMember.getRole()==Role.ADMIN){ // 유일한 ADMIN channelMember 삭제는 거부
+            boolean isOnlyAdmin = channelMember.getChannel().getChannelMembers().stream()
+            .filter(cm->cm.getRole() == Role.ADMIN && !channelMember.getMember().getId().equals(cm.getMember().getId()))
+            .findFirst()
+            .isEmpty();
+            if(isOnlyAdmin) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The only ADMIN cannot be deleted");
+        }
         channelMemberRepository.delete(channelMember);
     }
 

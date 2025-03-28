@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, String>> handleResponseStatusException(ResponseStatusException e) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", e.getReason()); // 예: "접근 권한이 없습니다."
+        errorResponse.put("error", e.getReason()); 
 
         return ResponseEntity
                 .status(e.getStatusCode())
