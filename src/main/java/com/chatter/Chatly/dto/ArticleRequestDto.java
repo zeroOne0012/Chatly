@@ -7,11 +7,13 @@ import com.chatter.Chatly.domain.article.Article;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor // for ObjectMapper
 public class ArticleRequestDto {
     private String title;
     private String content;

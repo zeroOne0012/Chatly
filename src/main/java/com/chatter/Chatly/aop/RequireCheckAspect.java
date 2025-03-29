@@ -20,7 +20,7 @@ import com.chatter.Chatly.domain.channelmember.ChannelMemberService;
 import com.chatter.Chatly.domain.common.Role;
 import com.chatter.Chatly.domain.entity.Ownable;
 import com.chatter.Chatly.dto.TargetsDto;
-import com.chatter.Chatly.global.auth.AuthService;
+import com.chatter.Chatly.util.EnvUtil;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.persistence.EntityManager;
@@ -28,16 +28,18 @@ import jakarta.persistence.EntityManager;
 @Aspect
 @Component
 public class RequireCheckAspect {
-    private final AuthService authService;
     private final EntityManager entityManager;
     private final ChannelMemberService channelMemberService;
     private final MemberContext memberContext;
+    private final EnvUtil envUtil;
 
-    public RequireCheckAspect(AuthService authService, EntityManager entityManager, ChannelMemberService channelMemberService, MemberContext memberContext){
-        this.authService = authService;
+    public RequireCheckAspect(EntityManager entityManager, ChannelMemberService channelMemberService, MemberContext memberContext
+            ,EnvUtil envUtil
+            ){
         this.entityManager = entityManager;
         this.channelMemberService = channelMemberService;
         this.memberContext = memberContext;
+        this.envUtil = envUtil;
     }
 
     @Pointcut("@annotation(com.chatter.Chatly.annotation.RequirePrivilege)")
@@ -83,6 +85,14 @@ public class RequireCheckAspect {
             // 파라미터 이름, 값 매핑
             MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
             String[] paramNames = methodSignature.getParameterNames();
+            if (paramNames == null || paramNames.length == 0) {
+                // if (envUtil.isDev()) {
+                //     System.out.println("FATAL: request's params not found!!!!!!!!!!!!!!");
+                //     return;
+                // }
+                // System.out.println(joinPoint.getArgs().length + "!!!!!!!!!!!args는 있고 paramNames만 사라진다!!!!!!!!");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "request's params not found!");
+            }
             Object[] args = joinPoint.getArgs();
 
             List<Long> entityId = new ArrayList<>();

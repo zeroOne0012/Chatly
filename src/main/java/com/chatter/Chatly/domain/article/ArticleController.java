@@ -36,7 +36,7 @@ public class ArticleController {
         return ResponseEntity.ok(articles);
     }
 
-    @GetMapping("/all-member")
+    @GetMapping("/mine")
     @CheckAccessPossession
     public ResponseEntity<List<ArticleDto>> getAllArticleByMember(@PathVariable("cid") Long cid) {
         List<ArticleDto> articles = articleService.getAllArticleByMember(cid);
@@ -58,7 +58,7 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    @RequirePrivilege
+    // @RequirePrivilege
     @RequireOwnership(entityClass = Article.class, idParam = "id")
     public ResponseEntity<ArticleDto> updateArticle(@PathVariable("cid") Long cid, @PathVariable("id") Long id, @RequestBody ArticleRequestDto requestDto) {
         ArticleDto article = articleService.updateArticle(cid, id, requestDto);
