@@ -28,10 +28,9 @@
 
 
 
-## issue
-- Comment~
+## task
+- Comment
 - Chat
 - Like
 - File
-- Need test codes
-- exception handling: id-NaN, Conflict
+- Refresh-Token
