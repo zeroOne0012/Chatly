@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.chatter.Chatly.entity.User;
+import com.chatter.Chatly.entity.Member;
 
-public interface UserRepository extends JpaRepository<User, String>{
+public interface MemberRepository extends JpaRepository<Member, String>{
     boolean existsByEmail(String email);
     @Override
-    Optional<User> findById(String id);
+    Optional<Member> findById(String id);
 }

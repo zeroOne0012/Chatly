@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chatter.Chatly.dto.UserRequestDto;
+import com.chatter.Chatly.dto.MemberRequestDto;
 import com.chatter.Chatly.service.AuthService;
 
 
@@ -22,7 +22,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<HashMap<String, String>> login(@RequestBody UserRequestDto requestDto) {
+    public ResponseEntity<HashMap<String, String>> login(@RequestBody MemberRequestDto requestDto) {
         String token = authService.login(requestDto.getId(), requestDto.getPassword());
         HashMap<String, String> res = new HashMap<>();
         res.put("message", "success");

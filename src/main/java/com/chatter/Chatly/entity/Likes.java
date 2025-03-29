@@ -7,23 +7,29 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class File {
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"member_id", "article_id"}),
+    @UniqueConstraint(columnNames = {"member_id", "comment_id"}),
+    @UniqueConstraint(columnNames = {"member_id", "message_id"})
+})
+public class Likes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fileName;
-    private String fileUrl;
+    @ManyToOne
+    @JoinColumn(name = "channel_member_id")
+    private ChannelMember channelMember;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "article_id", nullable = true)
     private Article article;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "comment_id", nullable = true)
     private Comment comment;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "message_id", nullable = true)
     private Message message;
 }

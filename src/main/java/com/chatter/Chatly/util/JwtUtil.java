@@ -1,25 +1,39 @@
-package com.chatter.Chatly.config;
+package com.chatter.Chatly.util;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 
-import com.chatter.Chatly.entity.User;
+import com.chatter.Chatly.entity.Member;
 
 public class JwtUtil {
-    public static String createJwt(User user, String secretKey, Long expiredMs){
+    public static String createJwt(Member member, String secretKey, Long expiredMs){
         // Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         Key key = getSigningKey(secretKey);
 //        Claims claims = Jwts.claims();
-//        claims.put("userName", userName);
+//        claims.put("memberName", memberName);
+
+        // 필요 정보만 추출
+        Map<String, Object> memberData = new HashMap<>();
+        memberData.put("id", member.getId());
+        memberData.put("email", member.getEmail());
+        memberData.put("nickname", member.getNickname());
+        memberData.put("createdAt", member.getCreatedAt().toString());
+
+
         return Jwts.builder()
-                .claim("user", user)
+                .claim("member", memberData)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -32,7 +46,8 @@ public class JwtUtil {
         return extractClaims(token, secretKey).getExpiration().before(new Date());
     }
 
-    private static Claims extractClaims(String token, String secretKey) {
+    // default: 같은 패키지 내에서 호출
+    static Claims extractClaims(String token, String secretKey) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey(secretKey)) // 최신 방식 적용
                 .build()
