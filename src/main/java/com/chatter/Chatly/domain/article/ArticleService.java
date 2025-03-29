@@ -15,7 +15,6 @@ import com.chatter.Chatly.dto.TargetsDto;
 import com.chatter.Chatly.exception.InvalidRequestException;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
-import com.chatter.Chatly.global.auth.AuthService;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;
@@ -27,19 +26,16 @@ import lombok.extern.slf4j.Slf4j;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ChannelRepository channelRepository;
-    private final AuthService authService;
     private final MemberRepository memberRepository;
     private final MemberContext memberContext;
     public ArticleService(
         ArticleRepository articleRepository,
         ChannelRepository channelRepository, 
-        AuthService authService,
         MemberRepository memberRepository,
         MemberContext memberContext
         ) {
         this.articleRepository = articleRepository;
         this.channelRepository = channelRepository;
-        this.authService = authService;
         this.memberRepository = memberRepository;
         this.memberContext = memberContext;
     }

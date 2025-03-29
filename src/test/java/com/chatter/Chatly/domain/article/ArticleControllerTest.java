@@ -1,6 +1,5 @@
 package com.chatter.Chatly.domain.article;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 // import static org.mockito.ArgumentMatchers.anyLong;
@@ -16,9 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -51,9 +48,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // static 없이 @BeforeAll 사용
 @SpringBootTest
 @AutoConfigureMockMvc
-// @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS) // 테스트 전 컨텍스트를 새로 고침
-// @AutoConfigureTestDatabase // 전체 테스트 시 DB 관련 에러 해결?
-// @WebMvcTest
 public class ArticleControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -80,11 +74,7 @@ public class ArticleControllerTest {
     private ArticleService articleService;
     @MockitoBean
     private ChannelMemberService channelMemberService;
-    // @MockitoBean
-    // private ChannelService channelService;
-    // @MockitoBean
-    // private MemberService memberService;
-    
+   
 
     // A: 관리자
     // B: 채널 멤버
@@ -185,16 +175,12 @@ public class ArticleControllerTest {
         ))).thenReturn(article);
 
         // "/api/channel/1/article/1"
-        // when(articleService.updateArticle(channelId, 1L, articleDto)).thenReturn(article);
-        // when(articleService.updateArticle(eq(channelId), eq(1L), any(ArticleRequestDto.class)))
-        // .thenReturn(article);
         when(articleService.updateArticle(eq(channelId), eq(1L), argThat(dto ->
             "req_title".equals(dto.getTitle()) && "req_content".equals(dto.getContent())
         ))).thenReturn(article);
         
         // "/api/channel/1/article" // article id: int body dto(List)
         // when(articleService.deleteArticle(channelId, idxesDto)).thenReturn(XX);
-    
     }
 
 
@@ -281,6 +267,7 @@ public class ArticleControllerTest {
     }
 
 
+
     
     // "/api/channel/1/article/1(article id)" // 1L: article id
     private String getArticleById = "/api/channel/1/article/1";
@@ -317,6 +304,7 @@ public class ArticleControllerTest {
         mockMvc.perform(get(getArticleById))
                 .andExpect(status().isForbidden());
     }
+
 
     /////////////////////////////////////////// POST ///////////////////////////////////////////
     // "/api/channel/1/article"
@@ -359,6 +347,7 @@ public class ArticleControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+
     /////////////////////////////////////////// PUT ///////////////////////////////////////////
     // "/api/channel/1/article/1"
     private String updateArticle = "/api/channel/1/article/1";
@@ -390,6 +379,7 @@ public class ArticleControllerTest {
     //////////// ? RequireCheckAspect 에서 paramNames가 null이 되어버려 테스트 불가 (실제 동작, 테스트만 안됨)
     //////////// ! paramNames는 없지만 args는 있음, aop 로직을 paramName이 아닌 args index 기반으로 바꾸면 테스트도 가능할 것으로 보임!
 
+    
     @Test
     void testUpdateArticle_401_토큰만료D유저() throws Exception{
         mockMvc.perform(put(updateArticle)
@@ -440,7 +430,3 @@ public class ArticleControllerTest {
                 .andExpect(status().isForbidden());
     }
 }
-
-// @Configuration
-// @EnableAspectJAutoProxy(proxyTargetClass = true)
-// public class TestAopConfig {}
