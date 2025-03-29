@@ -351,35 +351,35 @@ public class ArticleControllerTest {
     /////////////////////////////////////////// PUT ///////////////////////////////////////////
     // "/api/channel/1/article/1"
     private String updateArticle = "/api/channel/1/article/1";
-    // @Test
-    // void testUpdateArticle_200_채널속한B유저() throws Exception{
-    //     mockMvc.perform(put(updateArticle)
-    //             .contentType(MediaType.APPLICATION_JSON)
-    //             .content(postReqJson)
-    //             .header("Authorization", "Bearer " + tokenB))
-    //             .andDo(print()) // 응답 콘솔 출력
-    //             .andExpect(status().isOk())
-    //             .andExpect(jsonPath("$.title").value("title"))
-    //             .andExpect(jsonPath("$.content").value("content"))
-    //             .andExpect(jsonPath("$.created_at").value(LocalDate.now().toString().concat("T00:00:00")))
-    //             .andExpect(jsonPath("$.like_count").value(1))
-    //             .andExpect(jsonPath("$.member_id").value("id"))
-    //             .andExpect(jsonPath("$.file_urls[0]").value("url"));
-    // }
+    @Test
+    void testUpdateArticle_200_채널속한B유저() throws Exception{
+        mockMvc.perform(put(updateArticle)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(postReqJson)
+                .header("Authorization", "Bearer " + tokenB))
+                .andDo(print()) // 응답 콘솔 출력
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("title"))
+                .andExpect(jsonPath("$.content").value("content"))
+                .andExpect(jsonPath("$.created_at").value(LocalDate.now().toString().concat("T00:00:00")))
+                .andExpect(jsonPath("$.like_count").value(1))
+                .andExpect(jsonPath("$.member_id").value("id"))
+                .andExpect(jsonPath("$.file_urls[0]").value("url"));
+    }
 
-    // @Test
-    // void testUpdateArticle_403_채널속하지않은C유저() throws Exception{
-    //     mockMvc.perform(put(updateArticle)
-    //             .contentType(MediaType.APPLICATION_JSON)
-    //             .content(postReqJson)
-    //             .header("Authorization", "Bearer " + tokenC))
-    //             .andExpect(status().isForbidden())
-    //             .andExpect(jsonPath("$.error").value("Access denied"));
-    // }
+    @Test
+    void testUpdateArticle_403_채널속하지않은C유저() throws Exception{
+        mockMvc.perform(put(updateArticle)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(postReqJson)
+                .header("Authorization", "Bearer " + tokenC))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("Access denied"));
+    }
     //////////// ? RequireCheckAspect 에서 paramNames가 null이 되어버려 테스트 불가 (실제 동작, 테스트만 안됨)
     //////////// ! paramNames는 없지만 args는 있음, aop 로직을 paramName이 아닌 args index 기반으로 바꾸면 테스트도 가능할 것으로 보임!
 
-    
+
     @Test
     void testUpdateArticle_401_토큰만료D유저() throws Exception{
         mockMvc.perform(put(updateArticle)

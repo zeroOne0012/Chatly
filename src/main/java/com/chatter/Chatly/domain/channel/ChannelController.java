@@ -45,7 +45,6 @@ public class ChannelController {
 
     @PutMapping("/{id}")
     @RequirePrivilege
-    // @RequireOwnership(entityClass = Channel.class, idParam = "id")
     public ResponseEntity<ChannelDto> updateChannel(@PathVariable("id") Long id, @RequestBody ChannelRequestDto dto) {
         ChannelDto channel = channelService.updateChannel(id, dto);
         return ResponseEntity.ok(channel);
@@ -53,7 +52,6 @@ public class ChannelController {
     }
     @DeleteMapping("/{id}")
     @RequirePrivilege
-    // @RequireOwnership(entityClass = Channel.class, idParam = "id")
     public ResponseEntity<ChannelDto> deleteChannel(@PathVariable("id") Long id) {
         channelService.deleteChannel(id);
         return ResponseEntity.noContent().build();
