@@ -34,3 +34,4 @@
 - Like
 - File
 - Need test codes
+- exception handling: id-NaN, Conflict
