@@ -29,8 +29,6 @@
 
 
 ## issue
-- AuthService circular reference -> @Lazy: Is it okay?
-- Domain cleanup
 - Comment~
 - Chat
 - Like
