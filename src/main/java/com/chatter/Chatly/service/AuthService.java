@@ -7,13 +7,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.chatter.Chatly.config.JwtUtil;
 import com.chatter.Chatly.entity.ChannelMember;
 import com.chatter.Chatly.entity.Member;
 import com.chatter.Chatly.repository.MemberRepository;
+import com.chatter.Chatly.util.JwtUtil;
 
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -31,7 +34,7 @@ public class AuthService {
     public AuthService(
             MemberRepository memberRepository, 
             BCryptPasswordEncoder passwordEncoder, 
-            @Lazy ChannelMemberService channelMemberService, // 순환 참조 임시 해결
+            ChannelMemberService channelMemberService,
             @Value("${jwt.token-validity-in-seconds}") String seconds
         ) {
         this.memberRepository = memberRepository;
@@ -52,14 +55,4 @@ public class AuthService {
 
         return JwtUtil.createJwt(member, secretKey, expiredMs);
     }    
-
-    public String getMemberIdFromRequest(){ // member ID 반환환
-        Claims claim = JwtUtil.getClaims(secretKey);
-        return (String) claim.get("member", Map.class).get("id");
-    } 
-
-    public ChannelMember getChannelMemberFromRequest(Long cid){ // member-channel 연결 반환
-        String mid = getMemberIdFromRequest();
-        return channelMemberService.isJoined(cid, mid);
-    }
 }

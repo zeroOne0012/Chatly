@@ -12,6 +12,7 @@ import com.chatter.Chatly.dto.MemberRequestDto;
 import com.chatter.Chatly.entity.Member;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.repository.MemberRepository;
+import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;
 
@@ -20,11 +21,11 @@ import jakarta.transaction.Transactional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final AuthService authService;
-    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder passwordEncoder, AuthService authService) {
+    private final MemberContext memberContext;
+    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder passwordEncoder, MemberContext memberContext) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
-        this.authService = authService;
+        this.memberContext = memberContext;
     }
 
     public List<MemberDto> getAllMembers(){
@@ -70,7 +71,7 @@ public class MemberService {
     }
 
     public boolean isRequester(String targetId){
-        String memberId = authService.getMemberIdFromRequest();
+        String memberId = memberContext.getMemberIdFromRequest();
         return memberId!=null && memberId.equals(targetId);
     }
 }

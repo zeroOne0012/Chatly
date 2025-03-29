@@ -17,6 +17,7 @@ import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.repository.ArticleRepository;
 import com.chatter.Chatly.repository.ChannelRepository;
 import com.chatter.Chatly.repository.MemberRepository;
+import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +30,19 @@ public class ArticleService {
     private final ChannelRepository channelRepository;
     private final AuthService authService;
     private final MemberRepository memberRepository;
+    private final MemberContext memberContext;
     public ArticleService(
         ArticleRepository articleRepository,
         ChannelRepository channelRepository, 
         AuthService authService,
-        MemberRepository memberRepository
+        MemberRepository memberRepository,
+        MemberContext memberContext
         ) {
         this.articleRepository = articleRepository;
         this.channelRepository = channelRepository;
         this.authService = authService;
         this.memberRepository = memberRepository;
+        this.memberContext = memberContext;
     }
     
     public List<ArticleDto> getAllArticle(Long cid) {
@@ -59,7 +63,7 @@ public class ArticleService {
         Channel channel = channelRepository.findById(cid)
                 .orElseThrow(() -> new ResourceNotFoundException("Channel not found with ID: " + cid));
 
-        String mid = authService.getMemberIdFromRequest();
+        String mid = memberContext.getMemberIdFromRequest();
         
         return channel.getArticles().stream()
         .filter(article->article.getMember().getId().equals(mid))
@@ -83,7 +87,7 @@ public class ArticleService {
         Article article = dto.toEntity();
 
         // 헤더에서 유저 정보 가져오기
-        String mid = authService.getMemberIdFromRequest();
+        String mid = memberContext.getMemberIdFromRequest();
         // article에 Channel, Member 등록
         Channel channel = channelRepository.findById(cid)
         .orElseThrow(() -> new ResourceNotFoundException("Channel not found with ID: " + cid));

@@ -17,6 +17,7 @@ import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.repository.ChannelMemberRepository;
 import com.chatter.Chatly.repository.ChannelRepository;
 import com.chatter.Chatly.repository.MemberRepository;
+import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -28,17 +29,17 @@ public class ChannelMemberService {
     private final ChannelMemberRepository channelMemberRepository;
     private final MemberRepository memberRepository;
     private final ChannelRepository channelRepository;
-    private final AuthService authService;
+    private final MemberContext memberContext;
     public ChannelMemberService(
         ChannelMemberRepository channelMemberRepository,
         MemberRepository memberRepository,
         ChannelRepository channelRepository,
-        AuthService authService
+        MemberContext memberContext
         ){
         this.channelMemberRepository = channelMemberRepository;
         this.memberRepository = memberRepository;
         this.channelRepository = channelRepository;
-        this.authService = authService;
+        this.memberContext = memberContext;
     }
 
     public List<ChannelMemberDto> getAllChannelMembers() {
@@ -95,7 +96,7 @@ public class ChannelMemberService {
     }
 
     public List<ChannelMemberDto> createChannelMembers(Long channel_id, List<String> members_id){
-        String requestMemberId = authService.getMemberIdFromRequest();
+        String requestMemberId = memberContext.getMemberIdFromRequest();
         if(isJoined(channel_id, requestMemberId)==null){ // 채널에 속하지 않은 사용자가 초대 요청한다면
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied"); // 요청 거부
         }
@@ -141,12 +142,17 @@ public class ChannelMemberService {
     }
 
     private void throwExceptionIfNoEditPrivilege(ChannelMember channelMember, Long cid, String mid){
-        String requestMemberId = authService.getMemberIdFromRequest();
+        String requestMemberId = memberContext.getMemberIdFromRequest();
         ChannelMember requestMembersConnection = isJoined(channelMember.getChannel().getId(), requestMemberId);
         if (!channelMember.getMember().getId().equals(requestMemberId) && // 본인이 아니면서
             !(requestMembersConnection!=null && requestMembersConnection.hasPrivilege())){ // 같은 채널의 관리자도 아니면
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied"); // 채널 연결 삭제 요청 거부
         }
     }
+
+    // public ChannelMember getChannelMemberFromRequest(Long cid){ // member-channel 연결 반환
+    //     String mid = memberContext.getMemberIdFromRequest();
+    //     return isJoined(cid, mid);
+    // }
 
 }

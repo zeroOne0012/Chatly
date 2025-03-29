@@ -11,7 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.chatter.Chatly.service.MemberService;
+import com.chatter.Chatly.util.JwtUtil;
+import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final MemberService memberService;
+    private final MemberContext memberContext;
     private final String secretKey;
 
     @Override
@@ -62,7 +63,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
         // MemberName Token에서 꺼내기
-        String memberName = (String) JwtUtil.getClaims(secretKey).get("member", Map.class).get("id");
+        String memberName = (String) memberContext.getMemberIdFromRequest();
 
         // 권한 부여
         UsernamePasswordAuthenticationToken authenticationToken =

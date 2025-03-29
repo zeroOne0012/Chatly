@@ -1,4 +1,4 @@
-package com.chatter.Chatly.config;
+package com.chatter.Chatly.util;
 
 import java.security.Key;
 import java.util.Date;
@@ -46,18 +46,13 @@ public class JwtUtil {
         return extractClaims(token, secretKey).getExpiration().before(new Date());
     }
 
-    private static Claims extractClaims(String token, String secretKey) {
+    // default: 같은 패키지 내에서 호출
+    static Claims extractClaims(String token, String secretKey) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey(secretKey)) // 최신 방식 적용
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-    public static Claims getClaims(String secretKey){
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String token = request.getHeader("Authorization").replace("Bearer ", "");
-        return extractClaims(token, secretKey);
     }
 
     // private static Key getSigningKey(String secretKey) {

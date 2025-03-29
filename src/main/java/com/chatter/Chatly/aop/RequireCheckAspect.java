@@ -21,6 +21,7 @@ import com.chatter.Chatly.entity.Ownable;
 import com.chatter.Chatly.enums.Role;
 import com.chatter.Chatly.service.AuthService;
 import com.chatter.Chatly.service.ChannelMemberService;
+import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.persistence.EntityManager;
 
@@ -30,11 +31,13 @@ public class RequireCheckAspect {
     private final AuthService authService;
     private final EntityManager entityManager;
     private final ChannelMemberService channelMemberService;
+    private final MemberContext memberContext;
 
-    public RequireCheckAspect(AuthService authService, EntityManager entityManager, ChannelMemberService channelMemberService){
+    public RequireCheckAspect(AuthService authService, EntityManager entityManager, ChannelMemberService channelMemberService, MemberContext memberContext){
         this.authService = authService;
         this.entityManager = entityManager;
         this.channelMemberService = channelMemberService;
+        this.memberContext = memberContext;
     }
 
     @Pointcut("@annotation(com.chatter.Chatly.annotation.RequirePrivilege)")
@@ -60,7 +63,11 @@ public class RequireCheckAspect {
         // 채널 관련 권한 검사
         if(requirePrivilege!=null){ // 관리 권한 확인 어노테이션
             Long cid = (Long)joinPoint.getArgs()[0]; // url의 첫 인자: cid
-            ChannelMember cm = authService.getChannelMemberFromRequest(cid);
+
+            // ChannelMember cm = channelMemberService.getChannelMemberFromRequest(cid);
+            String mid = memberContext.getMemberIdFromRequest();
+            ChannelMember cm = channelMemberService.isJoined(cid, mid);
+
             if(cm==null) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
             Role role = cm.getRole();
             if(role==Role.ADMIN || role==Role.MODERATOR){
@@ -123,7 +130,7 @@ public class RequireCheckAspect {
                     }
 
                     String targetEntitysMemberId = (String) ((Ownable<?>) entity).getOwnerId();
-                    String requestersMemberId = authService.getMemberIdFromRequest();
+                    String requestersMemberId = memberContext.getMemberIdFromRequest();
                     
                     // 본인 것 외의 entity 감지
                     // anyMatch: true를 만나야 종료 -> true로 반환 후 반전하여 사용
@@ -140,7 +147,7 @@ public class RequireCheckAspect {
     @Before("@annotation(com.chatter.Chatly.annotation.CheckAccessPossession)")
     public void checkPermission(JoinPoint joinPoint){
         Long cid = (Long)joinPoint.getArgs()[0]; // url의 첫 인자: cid
-        String memberId = authService.getMemberIdFromRequest();
+        String memberId = memberContext.getMemberIdFromRequest();
         if(channelMemberService.isJoined(cid, memberId)==null){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }

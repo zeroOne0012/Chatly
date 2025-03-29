@@ -3,7 +3,7 @@
 
 ### Member & Auth
 - GET..: login
-- POST..: X (login, register)
+- POST(login, register): X 
 - PUT: Owner
 - DELETE: Owner
 

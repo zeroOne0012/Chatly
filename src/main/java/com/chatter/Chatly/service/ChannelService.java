@@ -12,6 +12,7 @@ import com.chatter.Chatly.enums.Role;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.repository.ChannelRepository;
+import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -22,15 +23,15 @@ import lombok.extern.slf4j.Slf4j;
 public class ChannelService {
     private final ChannelRepository channelRepository;
     private final ChannelMemberService channelMemberService;
-    private final AuthService authService;
+    private final MemberContext memberContext;
     public ChannelService(
         ChannelRepository channelRepository,
         ChannelMemberService channelMemberService,
-        AuthService authService
+        MemberContext memberContext
         ){
         this.channelRepository = channelRepository;
         this.channelMemberService = channelMemberService;
-        this.authService = authService;
+        this.memberContext = memberContext;
     }
 
     public List<ChannelDto> getAllChannel() {
@@ -48,7 +49,7 @@ public class ChannelService {
     public ChannelDto createChannel(ChannelRequestDto dto) {
         Channel created = channelRepository.save(dto.toEntity());
         if(created==null)throw new SaveFailedException("Failed to create Channel"); // Dead Code?
-        String mid = authService.getMemberIdFromRequest();
+        String mid = memberContext.getMemberIdFromRequest();
         List<ChannelMember> cm = channelMemberService.createChannelMembersReturnsEntity(created.getId(), List.of(mid));
         if(cm.size()!=1){
             throw new RuntimeException("cm.size() must be 1");

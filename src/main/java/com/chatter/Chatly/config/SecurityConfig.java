@@ -10,18 +10,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.chatter.Chatly.service.MemberService;
+import com.chatter.Chatly.util.MemberContext;
 
 import lombok.RequiredArgsConstructor;
-
-
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final MemberService memberService;
+    private final MemberContext memberContext;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -45,7 +43,7 @@ public class SecurityConfig {
                         sessionManagement ->
                                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(new JwtFilter(memberService, secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(memberContext, secretKey), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
