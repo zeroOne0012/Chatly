@@ -1,13 +1,15 @@
 package com.chatter.Chatly.domain.article;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-// import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +35,8 @@ import com.chatter.Chatly.dto.TargetsDto;
 import com.chatter.Chatly.testUtil.TestEntitySetter;
 import com.chatter.Chatly.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.persistence.EntityManager;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get; // get 요청
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post; // post 요청
@@ -74,6 +78,8 @@ public class ArticleControllerTest {
     private ArticleService articleService;
     @MockitoBean
     private ChannelMemberService channelMemberService;
+    @MockitoBean
+    private EntityManager entityManager;
    
 
     // A: 관리자
@@ -81,13 +87,15 @@ public class ArticleControllerTest {
     // C: 채널 멤버 X
     // D: 토큰 만료
     // + 로그인 X
-    Member memberA; 
-    Member memberB; 
+    Member memberA;     // RequireOwnership 테스트: 관리자(수정 가능)
+    Member memberB;     // RequireOwnership 테스트: 본인  (수정 가능)
+    Member memberB_2;   // RequireOwnership 테스트: 타인  (수정 불가)
     Member memberC; 
     Member memberD; 
     // Member memberE;  X
     String tokenA;
     String tokenB; 
+    String tokenB_2; 
     String tokenC; 
     String tokenD; 
     
@@ -96,12 +104,14 @@ public class ArticleControllerTest {
 
     ChannelMember cmA; // 관리자
     ChannelMember cmB; // 일반 사용자
+    ChannelMember cmB_2; // 일반 사용자
     // cmC는 없음    
     ChannelMember cmD; // (토큰 만료 사용자)
 
 
     String postReqJson;
-
+    String idxesReqJson;
+    // Class<?> entityClass; // for aop
 
     // @InjectMocks
     // private ArticleController articleController;
@@ -115,15 +125,18 @@ public class ArticleControllerTest {
         String pswd = passwordEncoder.encode("a");
         memberA = new Member("a", pswd, "nick", "a@");
         memberB = new Member("b", pswd, "nick", "b@");
+        memberB_2 = new Member("b_2", pswd, "nick", "b_2@");
         memberC = new Member("c", pswd, "nick", "c@");
         memberD = new Member("d", pswd, "nick", "c@");
         // DB에 저장 시 createdAt 값 설정하기에 토큰 발급을 위해 임의로 createdAt 값 설정
         TestEntitySetter.setEntityId(memberA, "createdAt", LocalDateTime.now());
         TestEntitySetter.setEntityId(memberB, "createdAt", LocalDateTime.now());
+        TestEntitySetter.setEntityId(memberB_2, "createdAt", LocalDateTime.now());
         TestEntitySetter.setEntityId(memberC, "createdAt", LocalDateTime.now());
         TestEntitySetter.setEntityId(memberD, "createdAt", LocalDateTime.now());
         tokenA = JwtUtil.createJwt(memberA, secretKey, expiredMs);
         tokenB = JwtUtil.createJwt(memberB, secretKey, expiredMs);
+        tokenB_2 = JwtUtil.createJwt(memberB_2, secretKey, expiredMs);
         tokenC = JwtUtil.createJwt(memberC, secretKey, expiredMs);
         tokenD = JwtUtil.createJwt(memberC, secretKey, 0L);
         // mockMvc = MockMvcBuilders.standaloneSetup(articleController).build();
@@ -133,10 +146,12 @@ public class ArticleControllerTest {
         cmA = new ChannelMember(channel, memberA);
         cmA.setRole(Role.ADMIN);
         cmB = new ChannelMember(channel, memberB);
-        cmD = new ChannelMember(channel, memberB);
+        cmB_2 = new ChannelMember(channel, memberB_2);
+        cmD = new ChannelMember(channel, memberD);
         // when(channelMemberService.isJoined(channelId, memberA.getId())).thenReturn((ChannelMember) new Object());
         when(channelMemberService.isJoined(channelId, memberA.getId())).thenReturn(cmA);
         when(channelMemberService.isJoined(channelId, memberB.getId())).thenReturn(cmB);
+        when(channelMemberService.isJoined(channelId, memberB_2.getId())).thenReturn(cmB_2);
         when(channelMemberService.isJoined(channelId, memberC.getId())).thenReturn(null);
         when(channelMemberService.isJoined(channelId, memberD.getId())).thenReturn(cmD);
     }
@@ -154,7 +169,8 @@ public class ArticleControllerTest {
         // 요청 데이터
         ArticleRequestDto articleDto = new ArticleRequestDto("req_title", "req_content", null);
         postReqJson = objectMapper.writeValueAsString(articleDto);
-        // TargetsDto idxesDto = new TargetsDto(new ArrayList<Long>(Arrays.asList(10L,11L,12L)));
+        TargetsDto idxesDto = new TargetsDto(new ArrayList<Long>(Arrays.asList(10L,11L,12L)));
+        idxesReqJson = objectMapper.writeValueAsString(idxesDto);
 
         // "/api/channel/1/article/all"
         when(articleService.getAllArticle(channelId)).thenReturn(articles);
@@ -178,9 +194,18 @@ public class ArticleControllerTest {
         when(articleService.updateArticle(eq(channelId), eq(1L), argThat(dto ->
             "req_title".equals(dto.getTitle()) && "req_content".equals(dto.getContent())
         ))).thenReturn(article);
+
+        // for aop: PUT, DELETE - RequireOwnership test!
+        Article targetArticle = new Article("",""); // 인증에만 쓰일 article: 실제론 수정의 대상
+        targetArticle.setMember(memberB); // article 편집 - 본인인지 테스트에서 B가 본인(수정 가능), B_2가 타인(수정 불가)
+        // when(entityManager.find(any(), any())).thenReturn(targetArticle);
+        when(entityManager.find(eq(Article.class), eq(1L))).thenReturn(targetArticle);
         
         // "/api/channel/1/article" // article id: int body dto(List)
         // when(articleService.deleteArticle(channelId, idxesDto)).thenReturn(XX);
+        when(entityManager.find(eq(Article.class), eq(10L))).thenReturn(targetArticle); // 지울 목록, 인증에만 쓰이기에 targetArticle 상관 X
+        when(entityManager.find(eq(Article.class), eq(11L))).thenReturn(targetArticle);
+        when(entityManager.find(eq(Article.class), eq(12L))).thenReturn(targetArticle);
     }
 
 
@@ -366,6 +391,16 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.member_id").value("id"))
                 .andExpect(jsonPath("$.file_urls[0]").value("url"));
     }
+    @Test
+    void testUpdateArticle_403_채널속한B유저_타인() throws Exception{
+        mockMvc.perform(put(updateArticle)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(postReqJson)
+                .header("Authorization", "Bearer " + tokenB_2))
+                .andDo(print()) // 응답 콘솔 출력
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("Access denied"));
+    }
 
     @Test
     void testUpdateArticle_403_채널속하지않은C유저() throws Exception{
@@ -376,8 +411,6 @@ public class ArticleControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error").value("Access denied"));
     }
-    //////////// ? RequireCheckAspect 에서 paramNames가 null이 되어버려 테스트 불가 (실제 동작, 테스트만 안됨)
-    //////////// ! paramNames는 없지만 args는 있음, aop 로직을 paramName이 아닌 args index 기반으로 바꾸면 테스트도 가능할 것으로 보임!
 
 
     @Test
@@ -396,26 +429,35 @@ public class ArticleControllerTest {
     /////////////////////////////////////////// DELETE ///////////////////////////////////////////
     // "/api/channel/1/article" // article id: int body dto(List)
     private String deleteArticle = "/api/channel/1/article";
-/////    @Test
-/////    void testDeleteArticle_200_채널속한B유저() throws Exception{
-/////        mockMvc.perform(delete(deleteArticle)
-/////                .contentType(MediaType.APPLICATION_JSON)
-/////                .content(postReqJson)
-/////                .header("Authorization", "Bearer " + tokenB))
-/////                .andDo(print())
-/////                .andExpect(status().isNoContent());
-/////    }
+    @Test
+    void testDeleteArticle_200_채널속한B유저() throws Exception{
+        mockMvc.perform(delete(deleteArticle)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(idxesReqJson)
+                .header("Authorization", "Bearer " + tokenB))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
+    @Test
+    void testDeleteArticle_200_채널속한B유저_타인() throws Exception{
+        mockMvc.perform(delete(deleteArticle)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(idxesReqJson)
+                .header("Authorization", "Bearer " + tokenB_2))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("Access denied"));
+    }
 
-/////    @Test
-/////    void testDeleteArticle_403_채널속하지않은C유저() throws Exception{
-/////        mockMvc.perform(delete(deleteArticle)
-/////                .contentType(MediaType.APPLICATION_JSON)
-/////                .content(postReqJson)
-/////                .header("Authorization", "Bearer " + tokenC))
-/////                .andExpect(status().isForbidden())
-/////                .andExpect(jsonPath("$.error").value("Access denied"));
-/////    }
-    ////////// ? RequireCheckAspect 에서 paramNames가 null이 되어버려 테스트 불가 (실제 동작, 테스트만 안됨)
+    @Test
+    void testDeleteArticle_403_채널속하지않은C유저() throws Exception{
+        mockMvc.perform(delete(deleteArticle)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(postReqJson)
+                .header("Authorization", "Bearer " + tokenC))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("Access denied"));
+    }
 
     @Test
     void testDeleteArticle_401_토큰만료D유저() throws Exception{

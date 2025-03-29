@@ -85,7 +85,6 @@ public class RequireCheckAspect {
             }
             
             Object targetArg = args[argIdx];
-
             List<Long> entityId = new ArrayList<>();
             if(targetArg instanceof Long aLong){
                 entityId.add(aLong);
@@ -97,15 +96,15 @@ public class RequireCheckAspect {
             } else{
                 throw new RuntimeException("Unexpected param type: must be Long or LstDto");
             }
-
+            
             if (entityId.isEmpty()) {
                 throw new IllegalArgumentException("cannot find Entity ID");
             }
-
+            
             hasOwnership = !entityId.stream()
                 .anyMatch(eid -> { // anyMatch: 조건 맞으면 중단(return boolean), stream() 안에서 break 불가
                     // Entity 조회
-                    Object entity = entityManager.find(entityClass, eid);
+                    Object entity = entityManager.find(entityClass, eid); // target-entity to edit
 
                     if (entity==null) {
                         throw new IllegalArgumentException("cannot find entity");
