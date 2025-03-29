@@ -1,4 +1,4 @@
-package com.chatter.Chatly.service;
+package com.chatter.Chatly.domain.channelmember;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,16 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.chatter.Chatly.domain.channel.Channel;
+import com.chatter.Chatly.domain.channel.ChannelRepository;
+import com.chatter.Chatly.domain.common.Role;
+import com.chatter.Chatly.domain.member.Member;
+import com.chatter.Chatly.domain.member.MemberRepository;
 import com.chatter.Chatly.dto.ChannelMemberDto;
-import com.chatter.Chatly.entity.Channel;
-import com.chatter.Chatly.entity.ChannelMember;
-import com.chatter.Chatly.entity.Member;
-import com.chatter.Chatly.enums.Role;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
-import com.chatter.Chatly.repository.ChannelMemberRepository;
-import com.chatter.Chatly.repository.ChannelRepository;
-import com.chatter.Chatly.repository.MemberRepository;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;

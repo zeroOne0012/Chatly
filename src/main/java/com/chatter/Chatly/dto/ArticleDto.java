@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.chatter.Chatly.entity.Article;
-import com.chatter.Chatly.entity.File;
+import com.chatter.Chatly.domain.article.Article;
+import com.chatter.Chatly.domain.entity.File;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

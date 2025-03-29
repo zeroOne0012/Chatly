@@ -1,4 +1,4 @@
-package com.chatter.Chatly.service;
+package com.chatter.Chatly.global.auth;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -10,9 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.chatter.Chatly.entity.ChannelMember;
-import com.chatter.Chatly.entity.Member;
-import com.chatter.Chatly.repository.MemberRepository;
+import com.chatter.Chatly.domain.channelmember.ChannelMember;
+import com.chatter.Chatly.domain.channelmember.ChannelMemberService;
+import com.chatter.Chatly.domain.member.Member;
+import com.chatter.Chatly.domain.member.MemberRepository;
 import com.chatter.Chatly.util.JwtUtil;
 
 import io.jsonwebtoken.Claims;

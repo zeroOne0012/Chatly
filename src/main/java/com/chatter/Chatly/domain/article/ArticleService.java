@@ -1,22 +1,21 @@
-package com.chatter.Chatly.service;
+package com.chatter.Chatly.domain.article;
 
 import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
+import com.chatter.Chatly.domain.channel.Channel;
+import com.chatter.Chatly.domain.channel.ChannelRepository;
+import com.chatter.Chatly.domain.member.Member;
+import com.chatter.Chatly.domain.member.MemberRepository;
 import com.chatter.Chatly.dto.ArticleDto;
 import com.chatter.Chatly.dto.ArticleRequestDto;
 import com.chatter.Chatly.dto.TargetsDto;
-import com.chatter.Chatly.entity.Article;
-import com.chatter.Chatly.entity.Channel;
-import com.chatter.Chatly.entity.Member;
 import com.chatter.Chatly.exception.InvalidRequestException;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
-import com.chatter.Chatly.repository.ArticleRepository;
-import com.chatter.Chatly.repository.ChannelRepository;
-import com.chatter.Chatly.repository.MemberRepository;
+import com.chatter.Chatly.global.auth.AuthService;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;

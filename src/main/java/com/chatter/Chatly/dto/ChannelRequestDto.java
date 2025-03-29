@@ -1,6 +1,6 @@
 package com.chatter.Chatly.dto;
 
-import com.chatter.Chatly.entity.Channel;
+import com.chatter.Chatly.domain.channel.Channel;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

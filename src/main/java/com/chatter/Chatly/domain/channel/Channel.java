@@ -1,4 +1,4 @@
-package com.chatter.Chatly.entity;
+package com.chatter.Chatly.domain.channel;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -6,6 +6,9 @@ import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.chatter.Chatly.domain.article.Article;
+import com.chatter.Chatly.domain.channelmember.ChannelMember;
 
 import jakarta.persistence.*;
 import lombok.Getter;

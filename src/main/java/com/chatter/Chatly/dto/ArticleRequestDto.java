@@ -3,7 +3,7 @@ package com.chatter.Chatly.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.chatter.Chatly.entity.Article;
+import com.chatter.Chatly.domain.article.Article;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

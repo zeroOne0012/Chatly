@@ -1,4 +1,4 @@
-package com.chatter.Chatly.controller;
+package com.chatter.Chatly.domain.member;
 
 import java.util.List;
 
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chatter.Chatly.dto.MemberDto;
 import com.chatter.Chatly.dto.MemberRequestDto;
-import com.chatter.Chatly.service.MemberService;
 
 @RestController
 @RequestMapping("/api/member")

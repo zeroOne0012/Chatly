@@ -1,4 +1,4 @@
-package com.chatter.Chatly.controller;
+package com.chatter.Chatly.global.auth;
 
 import java.util.HashMap;
 
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chatter.Chatly.dto.MemberRequestDto;
-import com.chatter.Chatly.service.AuthService;
 
 
 @RestController

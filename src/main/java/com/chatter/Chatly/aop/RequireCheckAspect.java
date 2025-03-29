@@ -15,12 +15,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
+import com.chatter.Chatly.domain.channelmember.ChannelMember;
+import com.chatter.Chatly.domain.channelmember.ChannelMemberService;
+import com.chatter.Chatly.domain.common.Role;
+import com.chatter.Chatly.domain.entity.Ownable;
 import com.chatter.Chatly.dto.TargetsDto;
-import com.chatter.Chatly.entity.ChannelMember;
-import com.chatter.Chatly.entity.Ownable;
-import com.chatter.Chatly.enums.Role;
-import com.chatter.Chatly.service.AuthService;
-import com.chatter.Chatly.service.ChannelMemberService;
+import com.chatter.Chatly.global.auth.AuthService;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.persistence.EntityManager;

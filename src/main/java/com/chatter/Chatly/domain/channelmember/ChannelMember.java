@@ -1,11 +1,13 @@
-package com.chatter.Chatly.entity;
+package com.chatter.Chatly.domain.channelmember;
 
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.chatter.Chatly.enums.Role;
+import com.chatter.Chatly.domain.channel.Channel;
+import com.chatter.Chatly.domain.common.Role;
+import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;
 import lombok.Getter;

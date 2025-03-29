@@ -1,7 +1,7 @@
 package com.chatter.Chatly.dto;
 
-import com.chatter.Chatly.entity.ChannelMember;
-import com.chatter.Chatly.enums.Role;
+import com.chatter.Chatly.domain.channelmember.ChannelMember;
+import com.chatter.Chatly.domain.common.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

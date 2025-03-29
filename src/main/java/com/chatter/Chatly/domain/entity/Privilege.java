@@ -1,3 +1,4 @@
+package com.chatter.Chatly.domain.entity;
 // package com.chatter.Chatly.entity;
 
 // import jakarta.persistence.Column;

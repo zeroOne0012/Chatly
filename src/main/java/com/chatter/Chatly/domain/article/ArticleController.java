@@ -1,4 +1,4 @@
-package com.chatter.Chatly.controller;
+package com.chatter.Chatly.domain.article;
 
 import java.util.List;
 
@@ -18,8 +18,6 @@ import com.chatter.Chatly.annotation.RequirePrivilege;
 import com.chatter.Chatly.dto.ArticleDto;
 import com.chatter.Chatly.dto.ArticleRequestDto;
 import com.chatter.Chatly.dto.TargetsDto;
-import com.chatter.Chatly.entity.Article;
-import com.chatter.Chatly.service.ArticleService;
 
 
 

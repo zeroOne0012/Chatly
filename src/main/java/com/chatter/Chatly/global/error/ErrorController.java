@@ -1,4 +1,4 @@
-package com.chatter.Chatly.controller;
+package com.chatter.Chatly.global.error;
 
 import java.util.HashMap;
 import java.util.Map;

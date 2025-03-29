@@ -1,4 +1,4 @@
-package com.chatter.Chatly.service;
+package com.chatter.Chatly.domain.member;
 
 import java.util.List;
 
@@ -9,9 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.chatter.Chatly.dto.MemberDto;
 import com.chatter.Chatly.dto.MemberRequestDto;
-import com.chatter.Chatly.entity.Member;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
-import com.chatter.Chatly.repository.MemberRepository;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;

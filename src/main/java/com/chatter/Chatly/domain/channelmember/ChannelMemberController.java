@@ -1,4 +1,4 @@
-package com.chatter.Chatly.controller;
+package com.chatter.Chatly.domain.channelmember;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -7,7 +7,6 @@ import com.chatter.Chatly.annotation.CheckAccessPossession;
 import com.chatter.Chatly.dto.ChannelMemberDto;
 import com.chatter.Chatly.dto.ChannelMemberRequestDto;
 import com.chatter.Chatly.dto.RoleRequestDto;
-import com.chatter.Chatly.service.ChannelMemberService;
 
 import java.util.List;
 
