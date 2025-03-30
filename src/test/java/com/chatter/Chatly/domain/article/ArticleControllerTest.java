@@ -172,15 +172,19 @@ public class ArticleControllerTest {
         TargetsDto idxesDto = new TargetsDto(new ArrayList<Long>(Arrays.asList(10L,11L,12L)));
         idxesReqJson = objectMapper.writeValueAsString(idxesDto);
 
+        // GET
         // "/api/channel/1/article/all"
         when(articleService.getAllArticle(channelId)).thenReturn(articles);
-
+        
+        // GET
         // "/api/channel/1/article/mine"
         when(articleService.getAllArticleByMember(channelId)).thenReturn(articles);
         
+        // GET
         // "/api/channel/1/article/1(article id)" // 1L: article id
         when(articleService.getArticleById(channelId, 1L)).thenReturn(article);
         
+        // POST
         // "/api/channel/1/article"
         // when(articleService.createArticle(channelId, articleDto)).thenReturn(article); // objectMapper로 들어가는 객체가 새 객체이기에 정상 작동 안함
         // 위 그대로 쓰려면 ArticleRequestDto의 equals overriding 하면 될 것으로 보임
@@ -190,6 +194,7 @@ public class ArticleControllerTest {
             "req_title".equals(dto.getTitle()) && "req_content".equals(dto.getContent())
         ))).thenReturn(article);
 
+        // PUT
         // "/api/channel/1/article/1"
         when(articleService.updateArticle(eq(channelId), eq(1L), argThat(dto ->
             "req_title".equals(dto.getTitle()) && "req_content".equals(dto.getContent())
@@ -201,6 +206,7 @@ public class ArticleControllerTest {
         // when(entityManager.find(any(), any())).thenReturn(targetArticle);
         when(entityManager.find(eq(Article.class), eq(1L))).thenReturn(targetArticle);
         
+        // DELETE
         // "/api/channel/1/article" // article id: int body dto(List)
         // when(articleService.deleteArticle(channelId, idxesDto)).thenReturn(XX);
         when(entityManager.find(eq(Article.class), eq(10L))).thenReturn(targetArticle); // 지울 목록, 인증에만 쓰이기에 targetArticle 상관 X

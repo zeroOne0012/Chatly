@@ -36,7 +36,7 @@ public class MemberController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<MemberDto> registerUser(@RequestBody MemberRequestDto requestDto) {
+    public ResponseEntity<MemberDto> registerMember(@RequestBody MemberRequestDto requestDto) {
         MemberDto member = memberService.createMember(requestDto);
         return ResponseEntity.ok(member);
     }
@@ -45,7 +45,6 @@ public class MemberController {
     public ResponseEntity<MemberDto> updateMember(@PathVariable("id") String id, @RequestBody MemberRequestDto requestDto) {
         MemberDto member = memberService.updateMember(id, requestDto);
         return ResponseEntity.ok(member);
-
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<MemberDto> deleteMember(@PathVariable("id") String id) {
