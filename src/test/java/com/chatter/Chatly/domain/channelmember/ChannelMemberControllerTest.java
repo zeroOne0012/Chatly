@@ -1,56 +1,36 @@
 package com.chatter.Chatly.domain.channelmember;
 
-import static org.junit.jupiter.api.DynamicTest.stream;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.chatter.Chatly.domain.channel.Channel;
-import com.chatter.Chatly.domain.channelmember.ChannelMember;
-import com.chatter.Chatly.domain.channelmember.ChannelMemberService;
 import com.chatter.Chatly.domain.common.Role;
 import com.chatter.Chatly.domain.member.Member;
-import com.chatter.Chatly.dto.ArticleDto;
-import com.chatter.Chatly.dto.ArticleRequestDto;
-import com.chatter.Chatly.dto.TargetsDto;
+import com.chatter.Chatly.dto.ChannelMemberDto;
+import com.chatter.Chatly.dto.ChannelMemberRequestDto;
 import com.chatter.Chatly.testUtil.TestEntitySetter;
 import com.chatter.Chatly.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.persistence.EntityManager;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get; // get 요청
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post; // post 요청
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put; // put 요청
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete; // delete 요청
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status; // status 검증
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath; // jsonPath 검증
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*; // print
-
-import com.chatter.Chatly.dto.ChannelMemberDto;
-import com.chatter.Chatly.dto.ChannelMemberRequestDto;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
@@ -173,29 +153,30 @@ public class ChannelMemberControllerTest {
     }
 
     /////////////////////////////////////////// POST ///////////////////////////////////////////
-    private String inviteChannelMembers = "/api/channel/channel-member/";
+    private String inviteChannelMembers = "/api/channel/channel-member";
     // insert conlict message !!!!!!
     // path + / !!!!!
-    // @Test
-    // void testInviteChannelMembers() throws Exception{
-    //     List<String> invitings = List.of("c"); 
-    //     ChannelMemberRequestDto reqDto = new ChannelMemberRequestDto(1L, invitings);
-    //     String reqJsonString = objectMapper.writeValueAsString(reqDto);
+    @Test
+    void testInviteChannelMembers() throws Exception{
+        List<String> invitings = List.of("c"); 
+        ChannelMemberRequestDto reqDto = new ChannelMemberRequestDto(1L, invitings);
+        String reqJsonString = objectMapper.writeValueAsString(reqDto);
+        // System.out.println("JSON 요청 본문: " + reqJsonString);
 
-    //     List<ChannelMember> cmLst = new ArrayList<>(List.of(cmC));
-    //     List<ChannelMemberDto> cmDtoLst = cmLst.stream()
-    //         .map(ChannelMemberDto::from)
-    //         .toList();
-    //     when(channelMemberService.createChannelMembers(eq(1L), 
-    //         argThat(dto-> "c".equals(dto.getFirst()))
-    //     )).thenReturn(cmDtoLst);
-    //     mockMvc.perform(get(inviteChannelMembers)
-    //         .header("Authorization", "Bearer "+tokenB)
-    //         .contentType(MediaType.APPLICATION_JSON)
-    //         .content(reqJsonString))
-    //         .andDo(print())
-    //         .andExpect(status().isOk());
-    // }
+        List<ChannelMember> cmLst = new ArrayList<>(List.of(cmC));
+        List<ChannelMemberDto> cmDtoLst = cmLst.stream()
+            .map(ChannelMemberDto::from)
+            .toList();
+        when(channelMemberService.createChannelMembers(eq(1L), 
+            eq(invitings)
+        )).thenReturn(cmDtoLst);
+        mockMvc.perform(post(inviteChannelMembers)
+            .header("Authorization", "Bearer "+tokenB)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(reqJsonString))
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
 
 
     @Test
