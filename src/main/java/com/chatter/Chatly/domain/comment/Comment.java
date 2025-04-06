@@ -1,4 +1,4 @@
-package com.chatter.Chatly.domain.entity;
+package com.chatter.Chatly.domain.comment;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -8,17 +8,21 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.chatter.Chatly.domain.article.Article;
+import com.chatter.Chatly.domain.common.Ownable;
+import com.chatter.Chatly.domain.entity.Likes;
 import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화 (@CreatedDate)
-public class Comment {
+public class Comment implements Ownable<String>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,4 +44,17 @@ public class Comment {
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Likes> likes = new ArrayList<>();
+
+    public Comment(String content){
+        this.content = content;
+    }
+
+    public void update(Comment comment){
+        this.content = comment.content;
+    }
+
+    @Override
+    public String getOwnerId(){
+        return member.getId();
+    }
 }

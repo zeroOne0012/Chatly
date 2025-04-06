@@ -42,7 +42,7 @@ public class MemberService {
         // null 확인?
         
         if(memberRepository.existsById(dto.getId())) {
-            throw new IllegalArgumentException("Member already exists with ID: " + dto.getId());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Member already exists with ID: " + dto.getId());
         }
         if(memberRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Member already exists with Email: " + dto.getEmail());

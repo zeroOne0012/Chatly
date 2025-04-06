@@ -1,6 +1,7 @@
 package com.chatter.Chatly.domain.entity;
 
 import com.chatter.Chatly.domain.article.Article;
+import com.chatter.Chatly.domain.comment.Comment;
 
 import jakarta.persistence.*;
 import lombok.Getter;

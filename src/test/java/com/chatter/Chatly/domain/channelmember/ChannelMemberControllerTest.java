@@ -205,7 +205,7 @@ public class ChannelMemberControllerTest {
         //     .toList();
         when(channelMemberService.createChannelMembers(eq(1L), 
             eq(invitings)
-        )).thenThrow(new DataIntegrityViolationException(""));
+        )).thenThrow(new ResponseStatusException(HttpStatus.CONFLICT, "ChannelMember already exists: [1, c]"));
         mockMvc.perform(post(inviteChannelMembers)
             .header("Authorization", "Bearer "+tokenB)
             .contentType(MediaType.APPLICATION_JSON)
@@ -213,7 +213,7 @@ public class ChannelMemberControllerTest {
             .andDo(print())
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.error").value("Conflict"))
-            .andExpect(jsonPath("$.message").value("Entry already exists"));
+            .andExpect(jsonPath("$.message").value("ChannelMember already exists: [1, c]"));
     }
 
     /////////////////////////////////////////// PATCH ///////////////////////////////////////////
