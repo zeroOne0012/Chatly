@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.chatter.Chatly.domain.article.Article;
 import com.chatter.Chatly.domain.channelmember.ChannelMember;
-import com.chatter.Chatly.domain.entity.Comment;
+import com.chatter.Chatly.domain.comment.Comment;
 
 import jakarta.persistence.*;
 import lombok.Getter;

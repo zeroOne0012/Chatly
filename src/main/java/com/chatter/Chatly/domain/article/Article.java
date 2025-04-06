@@ -10,10 +10,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.chatter.Chatly.domain.channel.Channel;
-import com.chatter.Chatly.domain.entity.Comment;
+import com.chatter.Chatly.domain.comment.Comment;
+import com.chatter.Chatly.domain.common.Ownable;
 import com.chatter.Chatly.domain.entity.File;
 import com.chatter.Chatly.domain.entity.Likes;
-import com.chatter.Chatly.domain.entity.Ownable;
 import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;

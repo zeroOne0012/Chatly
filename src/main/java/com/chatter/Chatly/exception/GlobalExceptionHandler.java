@@ -3,6 +3,7 @@ package com.chatter.Chatly.exception;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -33,11 +34,25 @@ public class GlobalExceptionHandler {
     // 삽입 충돌 에러(unique, primary key 등의 중복 값)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> handleDataIntegrityViolationException (DataIntegrityViolationException e) {
+        // Throwable rootCause = e.getRootCause(); // exception cause
+        // if (rootCause != null && rootCause.getMessage() != null &&
+        // rootCause.getMessage().toLowerCase().contains("duplicate")) { }     
+        String lowerMessage = Optional.ofNullable(e.getRootCause())
+            .map(Throwable::getMessage)
+            .map(String::toLowerCase)
+            .orElse("");
         Map<String, String> errorResponse = new HashMap<>();
-        // errorResponse.put("error", e.getMessage()); 
-        errorResponse.put("error", "Conflict"); 
-        errorResponse.put("message", "Entry already exists"); 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+        if (lowerMessage.contains("not-null") || lowerMessage.contains("null or transient")) {
+            // 요청 body 필수값 누락
+            errorResponse.put("error", "Bad Request");
+            errorResponse.put("message", "Missing required field(s)");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } else {
+            // 기타 데이터 무결성 위반
+            errorResponse.put("error", "Data Integrity Error");
+            errorResponse.put("message", "Invalid data submitted");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
     // 요청 param 타입 불일치

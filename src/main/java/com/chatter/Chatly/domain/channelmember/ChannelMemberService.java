@@ -94,6 +94,19 @@ public class ChannelMemberService {
     }
 
     public List<ChannelMemberDto> createChannelMembers(Long channel_id, List<String> members_id){
+        // 중복 검사(409)
+        Channel channel = channelRepository.findById(channel_id).orElse(null);
+        if(channel==null){
+            throw new ResourceNotFoundException("Channel not found with ID: " + channel_id);
+        }
+        members_id.stream().forEach((mid)->{
+            Member member = memberRepository.findById(mid).orElseThrow(()->new ResourceNotFoundException("Member not found with ID: " + mid));
+            if (channelMemberRepository.existsByChannelAndMember(channel, member)){
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "ChannelMember already exists: ["+channel.getId()+", "+member.getId()+"]"); // Dead Code?
+            }
+        });
+
+        // 저장
         String requestMemberId = memberContext.getMemberIdFromRequest();
         if(isJoined(channel_id, requestMemberId)==null){ // 채널에 속하지 않은 사용자가 초대 요청한다면
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied"); // 요청 거부
