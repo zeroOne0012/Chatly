@@ -5,9 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
 import com.chatter.Chatly.domain.member.Member;
 
 import io.jsonwebtoken.Claims;
@@ -15,7 +12,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
 
 public class JwtUtil {
     public static String createJwt(Member member, String secretKey, Long expiredMs){

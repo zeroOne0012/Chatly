@@ -36,7 +36,7 @@ public class ArticleController {
         return ResponseEntity.ok(articles);
     }
 
-    @GetMapping("/all-member")
+    @GetMapping("/mine")
     @CheckAccessPossession
     public ResponseEntity<List<ArticleDto>> getAllArticleByMember(@PathVariable("cid") Long cid) {
         List<ArticleDto> articles = articleService.getAllArticleByMember(cid);
@@ -58,8 +58,8 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    @RequirePrivilege
-    @RequireOwnership(entityClass = Article.class, idParam = "id")
+    // @RequirePrivilege
+    @RequireOwnership(entityClass = Article.class, argIdx = 1)
     public ResponseEntity<ArticleDto> updateArticle(@PathVariable("cid") Long cid, @PathVariable("id") Long id, @RequestBody ArticleRequestDto requestDto) {
         ArticleDto article = articleService.updateArticle(cid, id, requestDto);
         return ResponseEntity.ok(article);
@@ -68,7 +68,7 @@ public class ArticleController {
 
     @DeleteMapping
     @RequirePrivilege
-    @RequireOwnership(entityClass = Article.class, idParam = "ids")
+    @RequireOwnership(entityClass = Article.class, argIdx = 1)
     public ResponseEntity<ArticleDto> deleteArticle(@PathVariable("cid") Long cid, @RequestBody TargetsDto ids) {
         articleService.deleteArticle(cid, ids);
         return ResponseEntity.noContent().build();

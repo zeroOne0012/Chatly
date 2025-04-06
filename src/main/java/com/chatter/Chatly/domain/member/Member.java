@@ -57,7 +57,6 @@ public class Member {
     public void update(Member member){
         this.password = member.password;
         this.nickname = member.nickname;
-        this.email = member.email;
         this.profileUrl = member.profileUrl;
     }
 }

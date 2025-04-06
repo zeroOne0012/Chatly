@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.chatter.Chatly.annotation.CheckAccessPossession;
 import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
 import com.chatter.Chatly.domain.channelmember.ChannelMember;
@@ -20,7 +21,6 @@ import com.chatter.Chatly.domain.channelmember.ChannelMemberService;
 import com.chatter.Chatly.domain.common.Role;
 import com.chatter.Chatly.domain.entity.Ownable;
 import com.chatter.Chatly.dto.TargetsDto;
-import com.chatter.Chatly.global.auth.AuthService;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.persistence.EntityManager;
@@ -28,13 +28,11 @@ import jakarta.persistence.EntityManager;
 @Aspect
 @Component
 public class RequireCheckAspect {
-    private final AuthService authService;
     private final EntityManager entityManager;
     private final ChannelMemberService channelMemberService;
     private final MemberContext memberContext;
 
-    public RequireCheckAspect(AuthService authService, EntityManager entityManager, ChannelMemberService channelMemberService, MemberContext memberContext){
-        this.authService = authService;
+    public RequireCheckAspect(EntityManager entityManager, ChannelMemberService channelMemberService, MemberContext memberContext){
         this.entityManager = entityManager;
         this.channelMemberService = channelMemberService;
         this.memberContext = memberContext;
@@ -78,49 +76,35 @@ public class RequireCheckAspect {
         // 채널 내의 Entity 뿐 아니라 DM 같은 채널 외의 Entity도 검사 가능 (Member 검사는 MemberService에서)
         if(!hasPrivilege && requireOwnership!=null) { // 본인 확인 어노테이션
             Class<?> entityClass = requireOwnership.entityClass();
-            String idParamName = requireOwnership.idParam();
+            int argIdx = requireOwnership.argIdx();
             
-            // 파라미터 이름, 값 매핑
-            MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-            String[] paramNames = methodSignature.getParameterNames();
+            // 파라미터 requireOwnership.argIdx()로 찾아 매핑
             Object[] args = joinPoint.getArgs();
-
-            List<Long> entityId = new ArrayList<>();
-            for (int i = 0; i < paramNames.length; i++) {
-                if (paramNames[i].equals(idParamName)) {
-                    // if(args[i] instanceof Long){ // null 체크 포함
-                    //     entityId.add((Long) args[i]);
-                    if(args[i] instanceof Long aLong){ // null 체크 포함
-                        entityId.add(aLong);
-
-                    // } else if (args[i] instanceof List<?>){
-                    //     List<?> argList = (List<?>) args[i];
-                    //     if (!argList.isEmpty() && argList.getFirst() instanceof Long) {
-                    //         entityId.addAll(argList.stream().map(eid->(Long)eid).toList());
-                    //     }
-                    } else if (args[i] instanceof TargetsDto){
-                        List<?> argList = (List<?>) ((TargetsDto)args[i]).getLst();
-                        if (!argList.isEmpty() && argList.getFirst() instanceof Long) {
-                            entityId.addAll(argList.stream().map(eid->(Long)eid).toList());
-                        }
-                        
-                    } else{
-                        throw new RuntimeException("Unexpected paramName");
-                    }
-                    break;
-                }
+            if(argIdx<0 || argIdx>=args.length){
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid args index!");
             }
-
+            
+            Object targetArg = args[argIdx];
+            List<Long> entityId = new ArrayList<>();
+            if(targetArg instanceof Long aLong){
+                entityId.add(aLong);
+            } else if(targetArg instanceof TargetsDto){
+                List<?> argList = (List<?>) ((TargetsDto)targetArg).getLst();
+                if (!argList.isEmpty() && argList.getFirst() instanceof Long) {
+                    entityId.addAll(argList.stream().map(eid->(Long)eid).toList());
+                }
+            } else{
+                throw new RuntimeException("Unexpected param type: must be Long or LstDto");
+            }
+            
             if (entityId.isEmpty()) {
                 throw new IllegalArgumentException("cannot find Entity ID");
             }
-
-            // final boolean[] noOwnership = {false};
-            // noOwnership[0] = true;
+            
             hasOwnership = !entityId.stream()
                 .anyMatch(eid -> { // anyMatch: 조건 맞으면 중단(return boolean), stream() 안에서 break 불가
                     // Entity 조회
-                    Object entity = entityManager.find(entityClass, eid);
+                    Object entity = entityManager.find(entityClass, eid); // target-entity to edit
 
                     if (entity==null) {
                         throw new IllegalArgumentException("cannot find entity");
@@ -146,7 +130,12 @@ public class RequireCheckAspect {
     // 읽기 권한 - 채널에 속함 검사
     @Before("@annotation(com.chatter.Chatly.annotation.CheckAccessPossession)")
     public void checkPermission(JoinPoint joinPoint){
-        Long cid = (Long)joinPoint.getArgs()[0]; // url의 첫 인자: cid
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        CheckAccessPossession checkAccessPossession = method.getAnnotation(CheckAccessPossession.class);
+
+        int argIdx = checkAccessPossession.argIdx();
+        Long cid = (Long)joinPoint.getArgs()[argIdx]; // url의 첫 인자: cid
         String memberId = memberContext.getMemberIdFromRequest();
         if(channelMemberService.isJoined(cid, memberId)==null){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");

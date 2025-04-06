@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -16,16 +18,40 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    // 각종 HTTP 에러
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, String>> handleResponseStatusException(ResponseStatusException e) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", e.getReason()); 
+        errorResponse.put("error", ((HttpStatus) e.getStatusCode()).getReasonPhrase()); 
+        errorResponse.put("message", e.getReason()); 
 
         return ResponseEntity
                 .status(e.getStatusCode())
                 .body(errorResponse);
     }
 
+    // 삽입 충돌 에러(unique, primary key 등의 중복 값)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolationException (DataIntegrityViolationException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        // errorResponse.put("error", e.getMessage()); 
+        errorResponse.put("error", "Conflict"); 
+        errorResponse.put("message", "Entry already exists"); 
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    // 요청 param 타입 불일치
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Bad Request");
+        errorResponse.put("message", e.getMessage());
+        return ResponseEntity
+            .badRequest()
+            .body(errorResponse);
+    }
+
+    // 404
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException e) {
         Map<String, String> errorResponse = new HashMap<>();
