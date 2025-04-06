@@ -230,7 +230,8 @@ public class MemberControllerTest {
             .content(registerReqJson)
             .header("Authorization", "Bearer " + tokenC_2))
             .andExpect(status().isForbidden())
-            .andExpect(jsonPath("$.error").value("Access denied"));
+            .andExpect(jsonPath("$.error").value("Forbidden"))
+            .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     @Test
@@ -265,7 +266,8 @@ public class MemberControllerTest {
         mockMvc.perform(delete(deleteMember)
             .header("Authorization", "Bearer " + tokenC_2))
             .andExpect(status().isForbidden())
-            .andExpect(jsonPath("$.error").value("Access denied"));
+            .andExpect(jsonPath("$.error").value("Forbidden"))
+            .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     @Test

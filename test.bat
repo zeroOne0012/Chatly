@@ -1,0 +1,1 @@
+./gradlew test -Dspring.profiles.active=dev

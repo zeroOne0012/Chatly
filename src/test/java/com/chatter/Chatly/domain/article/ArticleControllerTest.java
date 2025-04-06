@@ -240,7 +240,8 @@ public class ArticleControllerTest {
         mockMvc.perform(get(getAllArticle)
                 .header("Authorization", "Bearer " + tokenC))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Access denied"));
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     @Test
@@ -281,7 +282,8 @@ public class ArticleControllerTest {
         mockMvc.perform(get(getAllArticleByMember)
                 .header("Authorization", "Bearer " + tokenC))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Access denied"));
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     @Test
@@ -320,7 +322,8 @@ public class ArticleControllerTest {
         mockMvc.perform(get(getArticleById)
                 .header("Authorization", "Bearer " + tokenC))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Access denied"));
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     @Test
@@ -362,7 +365,8 @@ public class ArticleControllerTest {
                 .content(postReqJson)
                 .header("Authorization", "Bearer " + tokenC))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Access denied"));
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     @Test
@@ -405,7 +409,8 @@ public class ArticleControllerTest {
                 .header("Authorization", "Bearer " + tokenB_2))
                 .andDo(print()) // 응답 콘솔 출력
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Access denied"));
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     @Test
@@ -415,7 +420,8 @@ public class ArticleControllerTest {
                 .content(postReqJson)
                 .header("Authorization", "Bearer " + tokenC))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Access denied"));
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
 
@@ -452,7 +458,8 @@ public class ArticleControllerTest {
                 .header("Authorization", "Bearer " + tokenB_2))
                 .andDo(print())
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Access denied"));
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     @Test
@@ -462,7 +469,8 @@ public class ArticleControllerTest {
                 .content(postReqJson)
                 .header("Authorization", "Bearer " + tokenC))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Access denied"));
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     @Test

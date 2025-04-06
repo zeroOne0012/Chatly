@@ -8,17 +8,26 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +37,8 @@ import com.chatter.Chatly.domain.common.Role;
 import com.chatter.Chatly.domain.member.Member;
 import com.chatter.Chatly.dto.ChannelMemberDto;
 import com.chatter.Chatly.dto.ChannelMemberRequestDto;
+import com.chatter.Chatly.dto.RoleRequestDto;
+import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.testUtil.TestEntitySetter;
 import com.chatter.Chatly.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -118,7 +129,8 @@ public class ChannelMemberControllerTest {
             .header("Authorization", "Bearer "+tokenC))
             .andDo(print())
             .andExpect(status().isForbidden())
-            .andExpect(jsonPath("$.error").value("Access denied"));
+            .andExpect(jsonPath("$.error").value("Forbidden"))
+            .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     private String getChannelMembersByMemberId = "/api/channel/channel-member/channel/1/member/b";
@@ -149,7 +161,8 @@ public class ChannelMemberControllerTest {
             .header("Authorization", "Bearer "+tokenC))
             .andDo(print())
             .andExpect(status().isForbidden())
-            .andExpect(jsonPath("$.error").value("Access denied"));
+            .andExpect(jsonPath("$.error").value("Forbidden"))
+            .andExpect(jsonPath("$.message").value("Access denied"));
     }
 
     /////////////////////////////////////////// POST ///////////////////////////////////////////
@@ -157,7 +170,7 @@ public class ChannelMemberControllerTest {
     // insert conlict message !!!!!!
     // path + / !!!!!
     @Test
-    void testInviteChannelMembers() throws Exception{
+    void testInviteChannelMembers_200() throws Exception{
         List<String> invitings = List.of("c"); 
         ChannelMemberRequestDto reqDto = new ChannelMemberRequestDto(1L, invitings);
         String reqJsonString = objectMapper.writeValueAsString(reqDto);
@@ -176,24 +189,102 @@ public class ChannelMemberControllerTest {
             .content(reqJsonString))
             .andDo(print())
             .andExpect(status().isOk());
+            //
     }
 
+    @Test
+    void testInviteChannelMembers_409_중복() throws Exception{
+        List<String> invitings = List.of("c"); 
+        ChannelMemberRequestDto reqDto = new ChannelMemberRequestDto(1L, invitings);
+        String reqJsonString = objectMapper.writeValueAsString(reqDto);
+        // System.out.println("JSON 요청 본문: " + reqJsonString);
+
+        // List<ChannelMember> cmLst = new ArrayList<>(List.of(cmC));
+        // List<ChannelMemberDto> cmDtoLst = cmLst.stream()
+        //     .map(ChannelMemberDto::from)
+        //     .toList();
+        when(channelMemberService.createChannelMembers(eq(1L), 
+            eq(invitings)
+        )).thenThrow(new DataIntegrityViolationException(""));
+        mockMvc.perform(post(inviteChannelMembers)
+            .header("Authorization", "Bearer "+tokenB)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(reqJsonString))
+            .andDo(print())
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.error").value("Conflict"))
+            .andExpect(jsonPath("$.message").value("Entry already exists"));
+    }
+
+    /////////////////////////////////////////// PATCH ///////////////////////////////////////////
+    private String updateChannelMembers = "/api/channel/channel-member/1";//cid
+    @Test
+    void testChangeMembersRole() throws Exception{
+        List<String> members = List.of("b"); 
+        RoleRequestDto reqDto = new RoleRequestDto(Role.MODERATOR, members);
+        String reqJsonString = objectMapper.writeValueAsString(reqDto);
+
+        List<ChannelMember> cmLst = new ArrayList<>(List.of(cmB)); // not MODERATOR
+        List<ChannelMemberDto> cmDtoLst = cmLst.stream()
+            .map(ChannelMemberDto::from)
+            .toList();
+        when(channelMemberService.updateChannelMembers(eq(1L), 
+            eq(members), eq(Role.MODERATOR)
+        )).thenReturn(cmDtoLst);
+        mockMvc.perform(patch(updateChannelMembers)
+            .header("Authorization", "Bearer "+tokenB)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(reqJsonString))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].channel_id").value(1))
+            .andExpect(jsonPath("$[0].member_id").value("b"));
+            // .andExpect(jsonPath("$[0].role").value(Role.MODERATOR));
+
+    }
+
+    
+    
+    
+    private String deleteChannelMember = "/api/channel/channel-member/1/c";
+    
+    @Test
+    @DisplayName("채널_멤버_삭제_200")
+    void testKickChannelMember_200() throws Exception {
+        doNothing().when(channelMemberService).deleteChannelMember(eq(1L), eq("c"));
+        mockMvc.perform(delete(deleteChannelMember)
+            .header("Authorization", "Bearer "+tokenC))
+            .andDo(print())
+            .andExpect(status().isNoContent());
+    }
+    @Test
+    @DisplayName("채널_멤버_삭제_404") // 없음
+    void testKickChannelMember_404() throws Exception {
+        doThrow(new ResourceNotFoundException("ChannelMember not found"))
+            .when(channelMemberService)
+            .deleteChannelMember(eq(1L), eq("c"));
+            mockMvc.perform(delete(deleteChannelMember)
+            .header("Authorization", "Bearer "+tokenC))
+            .andDo(print())
+            .andExpect(status().isNotFound());
+    }
+    // admin delete: 404
 
     @Test
-    void testChangeMembersRole() {
-        // RoleRequestDto
+    @DisplayName("채널_멤버_삭제_403")
+    void testKickChannelMember_403() throws Exception {
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied"))
+            .when(channelMemberService)
+            .deleteChannelMember(eq(1L), eq("c"));
+        mockMvc.perform(delete(deleteChannelMember)
+            .header("Authorization", "Bearer "+tokenC))
+            .andDo(print())
+            .andExpect(status().isForbidden());
     }
 
     // @Test
     // void testGetAllChannelMembers() {
 
     // }
-
-
-
-
-    @Test
-    void testKickChannelMember() {
-
-    }
 }
