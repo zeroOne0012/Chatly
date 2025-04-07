@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.chatter.Chatly.domain.chatroom.ChatRoom;
 import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;

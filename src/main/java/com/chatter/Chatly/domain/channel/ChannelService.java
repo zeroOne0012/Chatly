@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.chatter.Chatly.domain.channelmember.ChannelMember;
 import com.chatter.Chatly.domain.channelmember.ChannelMemberService;
+import com.chatter.Chatly.domain.chatroom.ChatRoom;
+import com.chatter.Chatly.domain.chatroom.ChatRoomRepository;
 import com.chatter.Chatly.domain.common.Role;
 import com.chatter.Chatly.dto.ChannelDto;
 import com.chatter.Chatly.dto.ChannelRequestDto;
@@ -23,14 +25,17 @@ public class ChannelService {
     private final ChannelRepository channelRepository;
     private final ChannelMemberService channelMemberService;
     private final MemberContext memberContext;
+    private final ChatRoomRepository chatRoomRepository;
     public ChannelService(
         ChannelRepository channelRepository,
         ChannelMemberService channelMemberService,
-        MemberContext memberContext
+        MemberContext memberContext,
+        ChatRoomRepository chatRoomRepository
         ){
         this.channelRepository = channelRepository;
         this.channelMemberService = channelMemberService;
         this.memberContext = memberContext;
+        this.chatRoomRepository = chatRoomRepository;
     }
 
     public List<ChannelDto> getAllChannel() {
@@ -48,11 +53,16 @@ public class ChannelService {
     public ChannelDto createChannel(ChannelRequestDto dto) {
         Channel created = channelRepository.save(dto.toEntity());
         if(created==null)throw new SaveFailedException("Failed to create Channel"); // Dead Code?
-        String mid = memberContext.getMemberIdFromRequest();
+        String mid = memberContext.getMemberIdFromRequest(); // 채널 개설자 채널멤버에 추가가
         List<ChannelMember> cm = channelMemberService.createChannelMembersReturnsEntity(created.getId(), List.of(mid));
         if(cm.size()!=1){
             throw new RuntimeException("cm.size() must be 1");
         }
+        // chatRoom 생성
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setChannel(created);
+        chatRoomRepository.save(chatRoom);
+        
         cm.getFirst().setRole(Role.ADMIN);
         return ChannelDto.from(created);
     }
