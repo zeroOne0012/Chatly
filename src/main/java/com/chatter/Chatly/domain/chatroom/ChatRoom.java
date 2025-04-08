@@ -7,7 +7,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.chatter.Chatly.domain.channel.Channel;
-import com.chatter.Chatly.domain.entity.Message;
+import com.chatter.Chatly.websocket.Message;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class ChatRoom {
 
     @ManyToOne
     @JoinColumn(name = "channel_id")
-    private Channel channel;
+    private Channel channel; // 채널에 속한 모든 Member 가 ChatRoom 조회 가능 대상
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<Message> messages;
