@@ -1,4 +1,4 @@
-package com.chatter.Chatly.websocket;
+package com.chatter.Chatly.websocket.message;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.chatter.Chatly.websocket;
+package com.chatter.Chatly.websocket.message;
 
 import com.chatter.Chatly.domain.chatroom.ChatRoom;
 import com.chatter.Chatly.domain.chatroom.ChatRoomRepository;

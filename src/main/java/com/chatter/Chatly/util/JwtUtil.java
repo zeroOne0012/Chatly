@@ -12,8 +12,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 
 public class JwtUtil {
+    @Value("${jwt.secret}")
+    private static String secretKey;
     public static String createJwt(Member member, String secretKey, Long expiredMs){
         // Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         Key key = getSigningKey(secretKey);
@@ -46,6 +49,13 @@ public class JwtUtil {
     static Claims extractClaims(String token, String secretKey) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey(secretKey)) // 최신 방식 적용
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+    public static Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey(secretKey))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

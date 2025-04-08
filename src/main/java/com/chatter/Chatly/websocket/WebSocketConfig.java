@@ -2,7 +2,9 @@ package com.chatter.Chatly.websocket;
 
 import com.chatter.Chatly.domain.channelmember.ChannelMemberService;
 import com.chatter.Chatly.domain.chatroom.ChatRoomRepository;
+import com.chatter.Chatly.domain.member.MemberRepository;
 import com.chatter.Chatly.util.MemberContext;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -10,23 +12,21 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
+import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 // 테스트 : https://jiangxy.github.io/websocket-debug-tool/
 
 @Configuration
 @EnableWebSocketMessageBroker
+@AllArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final MemberContext memberContext;
     private final ChatRoomRepository chatRoomRepository;
     private final ChannelMemberService channelMemberService;
-
-    public WebSocketConfig(MemberContext memberContext, ChatRoomRepository chatRoomRepository, ChannelMemberService channelMemberService) {
-        this.memberContext = memberContext;
-        this.chatRoomRepository = chatRoomRepository;
-        this.channelMemberService = channelMemberService;
-    }
+    private final WebSocketChannelInterceptor webSocketChannelInterceptor;
+    private final MemberRepository memberRepository;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -35,9 +35,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry
 //                .setErrorHandler(stompExceptionHandler)
                 .addEndpoint("/ws")
-            .setAllowedOrigins("*")  // 원하는 출처로 CORS 허용
+            .setAllowedOrigins("*")
+                .addInterceptors(new HttpSessionHandshakeInterceptor())  // 원하는 출처로 CORS 허용
 //            .addInterceptors(new WebSocketInterceptor(memberContext, chatRoomRepository, channelMemberService)) // WebSocket 연결 시 인증
-            .withSockJS();
+///////////////////////////            .addInterceptors((HandshakeInterceptor) new WebSocketChannelInterceptor(memberRepository)); // WebSocket 연결 시 인증
+//            .withSockJS();
 //            .setInterceptors(new HttpSessionHandshakeInterceptor()); // 웹소켓 서브 프로토콜 전달 (HTTP 세션 전달), 세션
     }
 
@@ -51,6 +53,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //    public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
 //            registry.addDecoratorFactory(new WebSocketInterceptorDecoratorFactory(new WebSocketInterceptor(memberContext, chatRoomRepository, channelMemberService)));
 //    }
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(webSocketChannelInterceptor);
+    }
 
     // ------
 

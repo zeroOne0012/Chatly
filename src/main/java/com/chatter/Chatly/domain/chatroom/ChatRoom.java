@@ -7,11 +7,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.chatter.Chatly.domain.channel.Channel;
-import com.chatter.Chatly.websocket.Message;
+import com.chatter.Chatly.websocket.message.Message;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity

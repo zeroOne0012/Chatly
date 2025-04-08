@@ -5,15 +5,15 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
 
 public class WebSocketInterceptorDecoratorFactory implements WebSocketHandlerDecoratorFactory {
 
-    private final WebSocketInterceptor webSocketInterceptor;
+    private final WebSocketChannelInterceptor webSocketChannelInterceptor;
 
-    public WebSocketInterceptorDecoratorFactory(WebSocketInterceptor webSocketInterceptor) {
-        this.webSocketInterceptor = webSocketInterceptor;
+    public WebSocketInterceptorDecoratorFactory(WebSocketChannelInterceptor webSocketChannelInterceptor) {
+        this.webSocketChannelInterceptor = webSocketChannelInterceptor;
     }
 
     @Override
     public WebSocketHandler decorate(WebSocketHandler handler) {
-        return new WebSocketInterceptorDecorator(handler, webSocketInterceptor);
+        return new WebSocketInterceptorDecorator(handler, webSocketChannelInterceptor);
     }
 }
 

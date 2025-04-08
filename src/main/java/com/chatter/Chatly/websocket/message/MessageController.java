@@ -1,9 +1,5 @@
- package com.chatter.Chatly.websocket;
+ package com.chatter.Chatly.websocket.message;
 
- import com.chatter.Chatly.domain.chatroom.ChatRoomRepository;
- import com.chatter.Chatly.domain.member.Member;
- import com.chatter.Chatly.domain.member.MemberRepository;
- import com.chatter.Chatly.exception.ResourceNotFoundException;
  import org.springframework.messaging.handler.annotation.Header;
  import org.springframework.messaging.handler.annotation.MessageMapping;
  import org.springframework.messaging.handler.annotation.SendTo;

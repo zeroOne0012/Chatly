@@ -7,11 +7,11 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 
 public class WebSocketInterceptorDecorator extends WebSocketHandlerDecorator {
 
-    private final WebSocketInterceptor webSocketInterceptor;
+    private final WebSocketChannelInterceptor webSocketChannelInterceptor;
 
-    public WebSocketInterceptorDecorator(WebSocketHandler delegate, WebSocketInterceptor webSocketInterceptor) {
+    public WebSocketInterceptorDecorator(WebSocketHandler delegate, WebSocketChannelInterceptor webSocketChannelInterceptor) {
         super(delegate);
-        this.webSocketInterceptor = webSocketInterceptor;
+        this.webSocketChannelInterceptor = webSocketChannelInterceptor;
     }
 
     @Override

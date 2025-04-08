@@ -3,7 +3,7 @@ package com.chatter.Chatly.domain.entity;
 import com.chatter.Chatly.domain.article.Article;
 import com.chatter.Chatly.domain.channelmember.ChannelMember;
 import com.chatter.Chatly.domain.comment.Comment;
-import com.chatter.Chatly.websocket.Message;
+import com.chatter.Chatly.websocket.message.Message;
 
 import jakarta.persistence.*;
 import lombok.Getter;
