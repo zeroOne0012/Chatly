@@ -46,16 +46,9 @@ public class JwtUtil {
     }
 
     // default: 같은 패키지 내에서 호출
-    static Claims extractClaims(String token, String secretKey) {
+    public static Claims extractClaims(String token, String secretKey) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey(secretKey)) // 최신 방식 적용
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-    public static Claims extractClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey(secretKey))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

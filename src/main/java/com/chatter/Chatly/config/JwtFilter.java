@@ -63,11 +63,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
         // MemberName Token에서 꺼내기
-        String memberName = (String) memberContext.getMemberIdFromRequest();
+        String memberId = (String) memberContext.getMemberIdFromRequest();
 
         // 권한 부여
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(memberName, null, List.of(new SimpleGrantedAuthority("Member")));
+                new UsernamePasswordAuthenticationToken(memberId, null, List.of(new SimpleGrantedAuthority("Member")));
 
         // Detail을 넣어준다.
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

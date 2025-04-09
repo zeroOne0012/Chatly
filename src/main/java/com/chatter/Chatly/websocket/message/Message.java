@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,15 +14,15 @@ import com.chatter.Chatly.domain.entity.Likes;
 import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화 (@CreatedDate)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+//@EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화 (@CreatedDate)
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +31,8 @@ public class Message {
     @Column(nullable = false)
     private String message;
     
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
+//    @CreatedDate
+//    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne
@@ -48,4 +48,9 @@ public class Message {
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
