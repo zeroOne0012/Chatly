@@ -6,6 +6,7 @@
  import com.chatter.Chatly.domain.member.Member;
  import com.chatter.Chatly.domain.member.MemberRepository;
  import com.chatter.Chatly.exception.ResourceNotFoundException;
+ import com.chatter.Chatly.websocket.message.dto.MessageDto;
  import com.chatter.Chatly.websocket.message.dto.MessageRequestDto;
  import jakarta.transaction.Transactional;
  import lombok.AllArgsConstructor;
@@ -30,14 +31,11 @@
 //     @SendTo("/topic/messages")  // retrun 시 메시지를 "/topic/messages"로 발행
      @Transactional
      public void sendMessage(MessageRequestDto dto, Principal principal){
-        System.out.println("DEBUG MESSAGE~~~  ");
-        System.out.println("DEBUG MESSAGE:  " + dto.getMessage());
-        System.out.println("DEBUG MESSAGE2:  " + dto.getChatRoomId());
          Message saved = messageService.saveMessage(dto, principal); // entity~dto
          // 채팅방에 메시지 발행
          simpMessagingTemplate.convertAndSend(
-                 "/topic/chatroom." + saved.getChatRoom().getId(),
-                 saved
+                 "/topic/chatroom/" + saved.getChatRoom().getId(),
+                 MessageDto.from(saved)
          );
 //         return message;  // 받은 메시지를 그대로 반환
      }
