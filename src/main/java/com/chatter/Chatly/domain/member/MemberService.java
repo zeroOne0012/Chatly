@@ -9,7 +9,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.chatter.Chatly.dto.MemberDto;
 import com.chatter.Chatly.dto.MemberRequestDto;
-import com.chatter.Chatly.exception.ResourceNotFoundException;
+import com.chatter.Chatly.exception.CommonErrorCode;
+import com.chatter.Chatly.exception.HttpException;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;
@@ -34,7 +35,7 @@ public class MemberService {
 
     public MemberDto getMemberById(String id){
         Member member = memberRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Member not found with ID: " + id));
+        .orElseThrow(() ->new HttpException(CommonErrorCode.NOT_FOUND,Member.class,id));
         return MemberDto.from(member);
     }
 
@@ -42,10 +43,10 @@ public class MemberService {
         // null 확인?
         
         if(memberRepository.existsById(dto.getId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Member already exists with ID: " + dto.getId());
+            throw new HttpException(CommonErrorCode.CONFLICT,Member.class,dto.getId());
         }
         if(memberRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Member already exists with Email: " + dto.getEmail());
+            throw new HttpException(CommonErrorCode.NOT_FOUND,Member.class,dto.getEmail());
         }
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
         Member createdMember = memberRepository.save(new Member(dto.getId(), encodedPassword, dto.getNickname(), dto.getEmail()));
@@ -56,7 +57,7 @@ public class MemberService {
         if (!isRequester(id)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         Member member = dto.toEntity();
         Member target = memberRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Member not found with ID: " + id));
+        .orElseThrow(() ->new HttpException(CommonErrorCode.NOT_FOUND,Member.class,id));
         target.update(member);
         return MemberDto.from(target);
     }
@@ -64,7 +65,7 @@ public class MemberService {
     public void deleteMember(String id){
         if (!isRequester(id)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         Member member = memberRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Member not found with ID: " + id));
+        .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND,Member.class,id));
         memberRepository.delete(member);
     }
 

@@ -8,7 +8,8 @@ import com.chatter.Chatly.domain.chatroom.ChatRoom;
 import com.chatter.Chatly.domain.chatroom.ChatRoomRepository;
 import com.chatter.Chatly.domain.member.Member;
 import com.chatter.Chatly.domain.member.MemberRepository;
-import com.chatter.Chatly.exception.ResourceNotFoundException;
+import com.chatter.Chatly.exception.CommonErrorCode;
+import com.chatter.Chatly.exception.HttpException;
 import com.chatter.Chatly.websocket.message.dto.MessageRequestDto;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -32,13 +33,16 @@ public class MessageService {
         String memberId = principal.getName();
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found with ID: " + memberId));
+                // .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND,Member.class,memberId));
+                .orElseThrow(() -> new RuntimeException("Not Found at MessageService"));
         ChatRoom chatRoom = chatRoomRepository.findById(dto.getChatRoomId())
-                .orElseThrow(() -> new ResourceNotFoundException("ChatRoom not found with ID: " + dto.getChatRoomId()));
+                // .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND,ChatRoom.class,dto.getChatRoomId()));
+                .orElseThrow(() -> new RuntimeException("Not Found at MessageService"));
 
         // 채널(채팅방)에 속함 검사 // 첫 연결 시 검사로 변경할 수 있을 것
         Channel channel = channelRepository.findById(chatRoom.getChannel().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Channel not found with ID: " + chatRoom.getChannel().getId()));
+                // .orElseThrow(() ->new HttpException(CommonErrorCode.NOT_FOUND,Channel.class,chatRoom.getChannel().getId()));
+                .orElseThrow(() -> new RuntimeException("Not Found at MessageService"));
         ChannelMember cm =  channelMemberService.isJoined(channel.getId(), member.getId());
         if(cm==null){
             log.error("Member does not belongs to the ChatRoom(Channel)");

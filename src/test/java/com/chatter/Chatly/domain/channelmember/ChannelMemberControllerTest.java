@@ -38,7 +38,8 @@ import com.chatter.Chatly.domain.member.Member;
 import com.chatter.Chatly.dto.ChannelMemberDto;
 import com.chatter.Chatly.dto.ChannelMemberRequestDto;
 import com.chatter.Chatly.dto.RoleRequestDto;
-import com.chatter.Chatly.exception.ResourceNotFoundException;
+import com.chatter.Chatly.exception.CommonErrorCode;
+import com.chatter.Chatly.exception.HttpException;
 import com.chatter.Chatly.testUtil.TestEntitySetter;
 import com.chatter.Chatly.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -261,7 +262,7 @@ public class ChannelMemberControllerTest {
     @Test
     @DisplayName("채널_멤버_삭제_404") // 없음
     void testKickChannelMember_404() throws Exception {
-        doThrow(new ResourceNotFoundException("ChannelMember not found"))
+        doThrow(new HttpException(CommonErrorCode.NOT_FOUND, ChannelMember.class, ""))
             .when(channelMemberService)
             .deleteChannelMember(eq(1L), eq("c"));
             mockMvc.perform(delete(deleteChannelMember)
