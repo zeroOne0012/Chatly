@@ -164,8 +164,8 @@ public class ArticleControllerTest {
     @BeforeEach
     void setResponse () throws Exception{
         // 응답 데이터
-        List<ArticleDto> articles = List.of(new ArticleDto(1L, "title", "content", LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT), 1, "id", List.of("url")));
-        ArticleDto article = new ArticleDto(1L, "title", "content", LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT), 1, "id", List.of("url"));
+        List<ArticleDto> articles = List.of(new ArticleDto(1L, "title", "content", LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT), 1, "id", 0, List.of("url")));
+        ArticleDto article = new ArticleDto(1L, "title", "content", LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT), 1, "id", 0, List.of("url"));
         // 요청 데이터
         ArticleRequestDto articleDto = new ArticleRequestDto("req_title", "req_content", null);
         postReqJson = objectMapper.writeValueAsString(articleDto);

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.chatter.Chatly.domain.article.Article;
 import com.chatter.Chatly.domain.channelmember.ChannelMember;
+import com.chatter.Chatly.domain.chatroom.ChatRoom;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -32,6 +33,9 @@ public class Channel {
 
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChannelMember> channelMembers = new HashSet<>();
+
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ChatRoom> chatRooms = new HashSet<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

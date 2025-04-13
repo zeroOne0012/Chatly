@@ -14,7 +14,7 @@ public class AspectLog {
 
     @Around("execution(* com.chatter.Chatly..*(..))")
     public Object doLog(ProceedingJoinPoint joinPoint) throws Throwable {
-		log.info("[log!] {}", joinPoint.getSignature()); // join point 시그니처
+		log.info("   [aop!] {}", joinPoint.getSignature()); // join point 시그니처
 		return joinPoint.proceed();
 	}
 }

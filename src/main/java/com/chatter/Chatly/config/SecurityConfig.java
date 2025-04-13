@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers("/api/auth/login", "/api/member/register").permitAll();
+                    requests.requestMatchers("/ws").permitAll(); // ws 메시지 -> 따로 인증 처리
                     // requests.requestMatchers(HttpMethod.GET, "/api/article/**").permitAll();
                     // requests.requestMatchers("/api/article/**").permitAll();
                     // requests.requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll();

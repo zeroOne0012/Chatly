@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ErrorController {
-    @RequestMapping(value = "/**")
+//    @RequestMapping(value = "/**") // -> /ws 까지 걸림
+    @RequestMapping(value = "/api/**")
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound() {
         Map<String, String> errorResponse = new HashMap<>();
