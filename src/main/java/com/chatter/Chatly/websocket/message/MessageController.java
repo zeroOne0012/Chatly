@@ -5,7 +5,6 @@
  import com.chatter.Chatly.domain.entity.File;
  import com.chatter.Chatly.domain.member.Member;
  import com.chatter.Chatly.domain.member.MemberRepository;
- import com.chatter.Chatly.exception.ResourceNotFoundException;
  import com.chatter.Chatly.websocket.message.dto.MessageDto;
  import com.chatter.Chatly.websocket.message.dto.MessageRequestDto;
  import jakarta.transaction.Transactional;

@@ -3,7 +3,6 @@ package com.chatter.Chatly.domain.article;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.chatter.Chatly.domain.channel.Channel;
@@ -15,9 +14,6 @@ import com.chatter.Chatly.dto.ArticleRequestDto;
 import com.chatter.Chatly.dto.TargetsDto;
 import com.chatter.Chatly.exception.CommonErrorCode;
 import com.chatter.Chatly.exception.HttpException;
-import com.chatter.Chatly.exception.InvalidRequestException;
-import com.chatter.Chatly.exception.ResourceNotFoundException;
-import com.chatter.Chatly.exception.SaveFailedException;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;
@@ -96,7 +92,7 @@ public class ArticleService {
         article.setMember(member);
         // save
         Article savedArticle = articleRepository.save(article);
-        if(savedArticle==null) throw new HttpException(CommonErrorCode.ARTICLE_SAVE_FAILED, Channel.class, cid);
+        if(savedArticle==null) throw new HttpException(CommonErrorCode.SAVE_FAILED, Article.class, "");
         return ArticleDto.from(savedArticle);
     }
 

@@ -6,7 +6,7 @@ import lombok.Getter;
 public class HttpException extends RuntimeException {
     private final CommonErrorCode errorCode;
     private final Class<?> resourceClass;
-    private final Object resourceId;
+    private final Object resourceId; // id or info-msg
     
     public HttpException(CommonErrorCode errorCode) {
         this.errorCode = errorCode;

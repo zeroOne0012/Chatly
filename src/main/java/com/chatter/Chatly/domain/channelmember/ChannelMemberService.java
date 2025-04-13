@@ -3,9 +3,7 @@ package com.chatter.Chatly.domain.channelmember;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.chatter.Chatly.domain.channel.Channel;
 import com.chatter.Chatly.domain.channel.ChannelRepository;
@@ -13,8 +11,8 @@ import com.chatter.Chatly.domain.common.Role;
 import com.chatter.Chatly.domain.member.Member;
 import com.chatter.Chatly.domain.member.MemberRepository;
 import com.chatter.Chatly.dto.ChannelMemberDto;
-import com.chatter.Chatly.exception.ResourceNotFoundException;
-import com.chatter.Chatly.exception.SaveFailedException;
+import com.chatter.Chatly.exception.CommonErrorCode;
+import com.chatter.Chatly.exception.HttpException;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;
@@ -50,27 +48,27 @@ public class ChannelMemberService {
         Channel channel = channelRepository.findById(channelId).orElse(null);
         Member member = memberRepository.findById(memberId).orElse(null);
         if(channel==null || member==null) {
-            throw new ResourceNotFoundException("ChannelMember not found with [channel,member]: [" + channelId + ", " + memberId + "]");
+            throw new HttpException(CommonErrorCode.NOT_FOUND, ChannelMember.class, "[" + channelId + ", " + memberId + "]");        
         };
         ChannelMember channelMember = channelMemberRepository.findByChannelAndMember(channel, member).orElse(null);
         return channelMember;
     }
 
-    public List<ChannelMemberDto> getChannelMembersByChannelId(Long id){
-        Channel channel = channelRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Channel not found with id: " + id));
+    public List<ChannelMemberDto> getChannelMembersByChannelId(Long cid){
+        Channel channel = channelRepository.findById(cid)
+        .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Channel.class, cid));
         List<ChannelMember> channelMember = channelMemberRepository.findByChannel(channel)
-        .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found with channel ID: " + id));
+        .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND));
         return channelMember.stream()
             .map(ChannelMemberDto::from)
             .toList();
     }
 
-    public List<ChannelMemberDto> getChannelMembersByMemberId(String id){
-        Member member = memberRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + id));
+    public List<ChannelMemberDto> getChannelMembersByMemberId(String mid){
+        Member member = memberRepository.findById(mid)
+        .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Member.class, mid));
         List<ChannelMember> channelMember = channelMemberRepository.findByMember(member)
-        .orElseThrow(() -> new ResourceNotFoundException("ChannelMember not found with member ID: " + id));
+        .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND));
         return channelMember.stream()
             .map(ChannelMemberDto::from)
             .toList();
@@ -78,10 +76,10 @@ public class ChannelMemberService {
 
     public List<ChannelMember> createChannelMembersReturnsEntity(Long channel_id, List<String> members_id){
         Channel channel = channelRepository.findById(channel_id)
-        .orElseThrow(() -> new ResourceNotFoundException("Channel not found with ID: " + channel_id));
+        .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Channel.class, channel_id));
         List<Member> members = members_id.stream()
-            .map(id->memberRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Member not found with ID: " + id)))
+            .map(mid->memberRepository.findById(mid)
+            .orElseThrow(() ->new HttpException(CommonErrorCode.NOT_FOUND, ChannelMember.class, mid)))
             .toList();
 
 
@@ -89,7 +87,7 @@ public class ChannelMemberService {
             .map(member -> channelMemberRepository.save(new ChannelMember(channel, member)))
             .toList();
 
-        if(created==null || created.size()!=members_id.size()) throw new SaveFailedException("Failed to create ChannelMember"); // Dead Code?
+        if(created==null || created.size()!=members_id.size()) throw new HttpException(CommonErrorCode.SAVE_FAILED, ChannelMember.class, ""); // Dead Code?
         return created;
     }
 
@@ -97,19 +95,19 @@ public class ChannelMemberService {
         // 중복 검사(409)
         Channel channel = channelRepository.findById(channel_id).orElse(null);
         if(channel==null){
-            throw new ResourceNotFoundException("Channel not found with ID: " + channel_id);
+            throw new HttpException(CommonErrorCode.NOT_FOUND, Channel.class, channel_id);
         }
         members_id.stream().forEach((mid)->{
-            Member member = memberRepository.findById(mid).orElseThrow(()->new ResourceNotFoundException("Member not found with ID: " + mid));
+            Member member = memberRepository.findById(mid).orElseThrow(()-> new HttpException(CommonErrorCode.NOT_FOUND, Member.class, mid));
             if (channelMemberRepository.existsByChannelAndMember(channel, member)){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "ChannelMember already exists: ["+channel.getId()+", "+member.getId()+"]"); // Dead Code?
+                throw new HttpException(CommonErrorCode.CONFLICT, ChannelMember.class, "["+channel.getId()+", "+member.getId()+"]"); // Dead Code?
             }
         });
 
         // 저장
         String requestMemberId = memberContext.getMemberIdFromRequest();
         if(isJoined(channel_id, requestMemberId)==null){ // 채널에 속하지 않은 사용자가 초대 요청한다면
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied"); // 요청 거부
+            throw new HttpException(CommonErrorCode.FORBIDDEN); // 요청 거부
         }
         List<ChannelMember> created = createChannelMembersReturnsEntity(channel_id, members_id);
         return created.stream()
@@ -127,7 +125,7 @@ public class ChannelMemberService {
         return memberId.stream()
         .map(mid->{
             ChannelMember channelMember = isJoined(cid, mid); 
-            if (channelMember==null) throw new ResourceNotFoundException("ChannelMember not found");
+            if (channelMember==null) throw new HttpException(CommonErrorCode.NOT_FOUND, ChannelMember.class, "["+cid+", "+mid+"]");
 
             throwExceptionIfNoEditPrivilege(channelMember, cid, mid); // 권한 점검
 
@@ -140,14 +138,14 @@ public class ChannelMemberService {
     
     public void deleteChannelMember(Long cid, String mid) {
         ChannelMember channelMember = isJoined(cid, mid); 
-        if (channelMember==null) throw new ResourceNotFoundException("ChannelMember not found");
+        if (channelMember==null) throw new HttpException(CommonErrorCode.NOT_FOUND, ChannelMember.class, "["+cid+", "+mid+"]");
         throwExceptionIfNoEditPrivilege(channelMember, cid, mid);
         if(channelMember.getRole()==Role.ADMIN){ // 유일한 ADMIN channelMember 삭제는 거부
             boolean isOnlyAdmin = channelMember.getChannel().getChannelMembers().stream()
             .filter(cm->cm.getRole() == Role.ADMIN && !channelMember.getMember().getId().equals(cm.getMember().getId()))
             .findFirst()
             .isEmpty();
-            if(isOnlyAdmin) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The only ADMIN cannot be deleted");
+            if(isOnlyAdmin) throw new HttpException(CommonErrorCode.CANNOT_DELETE_ADMIN);
         }
         channelMemberRepository.delete(channelMember);
     }
@@ -157,7 +155,7 @@ public class ChannelMemberService {
         ChannelMember requestMembersConnection = isJoined(channelMember.getChannel().getId(), requestMemberId);
         if (!channelMember.getMember().getId().equals(requestMemberId) && // 본인이 아니면서
             !(requestMembersConnection!=null && requestMembersConnection.hasPrivilege())){ // 같은 채널의 관리자도 아니면
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied"); // 채널 연결 삭제 요청 거부
+                throw new HttpException(CommonErrorCode.FORBIDDEN); // 채널 연결 삭제 요청 거부
         }
     }
 

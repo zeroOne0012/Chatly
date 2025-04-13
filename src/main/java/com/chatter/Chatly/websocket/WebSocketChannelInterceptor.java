@@ -1,21 +1,14 @@
  package com.chatter.Chatly.websocket;
 
- import com.chatter.Chatly.domain.channel.Channel;
- import com.chatter.Chatly.domain.channelmember.ChannelMember;
- import com.chatter.Chatly.domain.channelmember.ChannelMemberService;
- import com.chatter.Chatly.domain.chatroom.ChatRoom;
- import com.chatter.Chatly.domain.chatroom.ChatRoomRepository;
  import com.chatter.Chatly.domain.member.Member;
  import com.chatter.Chatly.domain.member.MemberRepository;
- import com.chatter.Chatly.exception.ResourceNotFoundException;
+ import com.chatter.Chatly.exception.CommonErrorCode;
+ import com.chatter.Chatly.exception.HttpException;
  import com.chatter.Chatly.util.JwtUtil;
- import com.chatter.Chatly.util.MemberContext;
  import io.jsonwebtoken.Claims;
  import lombok.RequiredArgsConstructor;
  import lombok.extern.slf4j.Slf4j;
  import org.springframework.beans.factory.annotation.Value;
- import org.springframework.http.server.ServerHttpRequest;
- import org.springframework.http.server.ServerHttpResponse;
  import org.springframework.messaging.Message;
  import org.springframework.messaging.MessageChannel;
  import org.springframework.messaging.simp.stomp.StompCommand;
@@ -25,8 +18,6 @@
  import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
  import org.springframework.security.core.authority.SimpleGrantedAuthority;
  import org.springframework.stereotype.Component;
- import org.springframework.web.socket.WebSocketHandler;
- import org.springframework.web.socket.server.HandshakeInterceptor;
 
  import java.util.List;
  import java.util.Map;
@@ -58,7 +49,8 @@
                      String memberId = (String) claim.get("member", Map.class).get("id");
 
                      Member member = memberRepository.findById(memberId)
-                             .orElseThrow(() -> new ResourceNotFoundException("Member not found with ID: " + memberId));
+                            //  .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Member.class, memberId));
+                             .orElseThrow(() -> new RuntimeException("Not Found at WebSocketChannelInterceptor"));
 
 
                      // 사용자 인증 정보 설정

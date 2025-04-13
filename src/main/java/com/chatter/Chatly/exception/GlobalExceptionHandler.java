@@ -1,5 +1,6 @@
 package com.chatter.Chatly.exception;
 
+import java.net.BindException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -8,10 +9,11 @@ import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.server.ResponseStatusException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,23 +23,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpException.class)
     public ResponseEntity<CommonErrorResponse> handleCustomException(HttpException e) {
-        // e.printStackTrace();
+        if(e.getErrorCode().getHttpStatus().value()==500){
+            e.printStackTrace();
+        }
 
         CommonErrorResponse errorResponse = CommonErrorResponse.of(e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(errorResponse);
     }
 
-    // 각종 HTTP 에러
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Map<String, String>> handleResponseStatusException(ResponseStatusException e) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", ((HttpStatus) e.getStatusCode()).getReasonPhrase()); 
-        errorResponse.put("message", e.getReason()); 
+    // // 각종 HTTP 에러
+    // @ExceptionHandler(ResponseStatusException.class)
+    // public ResponseEntity<Map<String, String>> handleResponseStatusException(ResponseStatusException e) {
+    //     Map<String, String> errorResponse = new HashMap<>();
+    //     errorResponse.put("error", ((HttpStatus) e.getStatusCode()).getReasonPhrase()); 
+    //     errorResponse.put("message", e.getReason()); 
 
-        return ResponseEntity
-                .status(e.getStatusCode())
-                .body(errorResponse);
-    }
+    //     return ResponseEntity
+    //             .status(e.getStatusCode())
+    //             .body(errorResponse);
+    // }
 
     // 삽입 충돌 에러(unique, primary key 등의 중복 값)
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -67,29 +71,59 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Bad Request");
+        errorResponse.put("error", "Invalid type");
+        errorResponse.put("message", e.getMessage());
+        return ResponseEntity
+            .badRequest()
+            .body(errorResponse);
+    }
+    // 잘못된 JSON 수신
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Invalid JSON");
+        errorResponse.put("message", e.getMessage());
+        return ResponseEntity
+            .badRequest()
+            .body(errorResponse);
+    }
+    // DTO에 대해 @NotNull, @Size, 등 실패
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Invalid JSON");
+        errorResponse.put("message", e.getMessage());
+        return ResponseEntity
+            .badRequest()
+            .body(errorResponse);
+    }
+    // @ModelAttribute 바인딩 실패
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<?> handleBindException(BindException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Invalid JSON");
         errorResponse.put("message", e.getMessage());
         return ResponseEntity
             .badRequest()
             .body(errorResponse);
     }
 
-    // 404
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException e) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Not Found");
-        errorResponse.put("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-    }
+    // // 404
+    // @ExceptionHandler(ResourceNotFoundException.class)
+    // public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException e) {
+    //     Map<String, String> errorResponse = new HashMap<>();
+    //     errorResponse.put("error", "Not Found");
+    //     errorResponse.put("message", e.getMessage());
+    //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    // }
 
-    @ExceptionHandler(SaveFailedException.class)
-    public ResponseEntity<Map<String, String>> handleSaveFailedException(SaveFailedException e) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Creation Failed");
-        errorResponse.put("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-    }
+    // @ExceptionHandler(SaveFailedException.class)
+    // public ResponseEntity<Map<String, String>> handleSaveFailedException(SaveFailedException e) {
+    //     Map<String, String> errorResponse = new HashMap<>();
+    //     errorResponse.put("error", "Creation Failed");
+    //     errorResponse.put("message", e.getMessage());
+    //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    // }
 
     // 500 INTERNAL SERVER ERROR
     @ExceptionHandler(Exception.class)
@@ -109,14 +143,14 @@ public class GlobalExceptionHandler {
         errorResponse.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
-    // 잘못된 요청
-    @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<Map<String,String>> handleInvalidRequestException(InvalidRequestException e){
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Bad Request");
-        errorResponse.put("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
+    // // 잘못된 요청
+    // @ExceptionHandler(InvalidRequestException.class)
+    // public ResponseEntity<Map<String,String>> handleInvalidRequestException(InvalidRequestException e){
+    //     Map<String, String> errorResponse = new HashMap<>();
+    //     errorResponse.put("error", "Bad Request");
+    //     errorResponse.put("message", e.getMessage());
+    //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    // }
 
     // Entity 못찾음
     @ExceptionHandler(NoSuchElementException.class)
