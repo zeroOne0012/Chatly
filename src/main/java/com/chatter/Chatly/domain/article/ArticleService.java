@@ -3,6 +3,7 @@ package com.chatter.Chatly.domain.article;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.chatter.Chatly.domain.channel.Channel;
@@ -12,6 +13,8 @@ import com.chatter.Chatly.domain.member.MemberRepository;
 import com.chatter.Chatly.dto.ArticleDto;
 import com.chatter.Chatly.dto.ArticleRequestDto;
 import com.chatter.Chatly.dto.TargetsDto;
+import com.chatter.Chatly.exception.CommonErrorCode;
+import com.chatter.Chatly.exception.HttpException;
 import com.chatter.Chatly.exception.InvalidRequestException;
 import com.chatter.Chatly.exception.ResourceNotFoundException;
 import com.chatter.Chatly.exception.SaveFailedException;
@@ -42,7 +45,7 @@ public class ArticleService {
     
     public List<ArticleDto> getAllArticle(Long cid) {
         Channel channel = channelRepository.findById(cid)
-                .orElseThrow(() -> new ResourceNotFoundException("Channel not found with ID: " + cid));
+                .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Channel.class, cid));
 
         return channel.getArticles().stream()
         .map(ArticleDto::from)
@@ -56,7 +59,7 @@ public class ArticleService {
     // channel 내 특정 member의 모든 article
     public List<ArticleDto> getAllArticleByMember(Long cid) {
         Channel channel = channelRepository.findById(cid)
-                .orElseThrow(() -> new ResourceNotFoundException("Channel not found with ID: " + cid));
+                .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Channel.class, cid));
 
         String mid = memberContext.getMemberIdFromRequest();
         
@@ -68,16 +71,17 @@ public class ArticleService {
 
     public ArticleDto getArticleById(Long cid, Long id) {
         Article article = articleRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Article not found with ID: " + id));
+        .orElseThrow(() ->  new HttpException(CommonErrorCode.NOT_FOUND, Article.class, id));
+
         if(!Objects.equals(article.getChannel().getId(), cid)){ // 채널 아이디 일치하지 않으면
-            throw new InvalidRequestException("Article does not belong to the channel");
+            throw new HttpException(CommonErrorCode.CHANNEL_ARTICLE_NOT_FOUND);
         }
         return ArticleDto.from(article);
     }
 
     public ArticleDto createArticle(Long cid, ArticleRequestDto dto) { // 파일 저장 로직 추가 필요
         if (dto.getTitle()==null || dto.getContent()==null) {
-            throw new IllegalArgumentException("Title and content must be provided");
+            throw new HttpException(CommonErrorCode.REQUIRED_FIELD_EMPTY);
         }
         Article article = dto.toEntity();
 
@@ -85,23 +89,23 @@ public class ArticleService {
         String mid = memberContext.getMemberIdFromRequest();
         // article에 Channel, Member 등록
         Channel channel = channelRepository.findById(cid)
-        .orElseThrow(() -> new ResourceNotFoundException("Channel not found with ID: " + cid));
+            .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Channel.class, cid));        
         Member member = memberRepository.findById(mid)
-        .orElseThrow(() -> new ResourceNotFoundException("Member not found with ID: " + mid));
+            .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Member.class, mid)); 
         article.setChannel(channel);
         article.setMember(member);
         // save
         Article savedArticle = articleRepository.save(article);
-        if(savedArticle==null) throw new SaveFailedException("Failed to save article");
+        if(savedArticle==null) throw new HttpException(CommonErrorCode.ARTICLE_SAVE_FAILED, Channel.class, cid);
         return ArticleDto.from(savedArticle);
     }
 
     public ArticleDto updateArticle(Long cid, Long id, ArticleRequestDto requestDto) {
         Article article = requestDto.toEntity();
         Article target = articleRepository.findById(id)
-        .orElseThrow(()-> new ResourceNotFoundException("Article not found with ID: " + id));
+            .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Article.class, id));
         if(!Objects.equals(target.getChannel().getId(), cid)){ // 채널 아이디 일치하지 않으면
-            throw new InvalidRequestException("Article does not belong to the channel");
+            throw new HttpException(CommonErrorCode.CHANNEL_ARTICLE_NOT_FOUND);
         }
         target.update(article);
         return ArticleDto.from(target);
@@ -110,11 +114,11 @@ public class ArticleService {
     public void deleteArticle(Long cid, TargetsDto ids) {
         List<Article> articles = articleRepository.findAllByIdIn(ids.getLst());
         if (articles.isEmpty()){
-            throw new ResourceNotFoundException("No articles found");
+            throw new HttpException(CommonErrorCode.NOT_FOUND, Article.class, ids.getLst());
         }
         articles.forEach(article -> {
             if (!Objects.equals(article.getChannel().getId(), cid)) {
-                throw new InvalidRequestException("Article does not belong to the channel");
+                throw new HttpException(CommonErrorCode.CHANNEL_ARTICLE_NOT_FOUND);
             }
             articleRepository.delete(article);
         });

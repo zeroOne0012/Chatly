@@ -19,6 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(HttpException.class)
+    public ResponseEntity<CommonErrorResponse> handleCustomException(HttpException e) {
+        // e.printStackTrace();
+
+        CommonErrorResponse errorResponse = CommonErrorResponse.of(e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(errorResponse);
+    }
+
     // 각종 HTTP 에러
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, String>> handleResponseStatusException(ResponseStatusException e) {
