@@ -1,4 +1,4 @@
-package com.chatter.Chatly.domain.entity;
+package com.chatter.Chatly.domain.like;
 
 import com.chatter.Chatly.domain.article.Article;
 import com.chatter.Chatly.domain.channelmember.ChannelMember;
@@ -13,11 +13,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"member_id", "article_id"}),
-    @UniqueConstraint(columnNames = {"member_id", "comment_id"}),
-    @UniqueConstraint(columnNames = {"member_id", "message_id"})
+    @UniqueConstraint(columnNames = {"member_id", "entity_type", "entity_id"})
 })
-public class Likes {
+public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,15 +24,14 @@ public class Likes {
     @JoinColumn(name = "channel_member_id")
     private ChannelMember channelMember;
 
-    @ManyToOne
-    @JoinColumn(name = "article_id", nullable = true)
-    private Article article;
+    @Column(name = "entity_type", nullable = true)
+    private String entityType;
 
-    @ManyToOne
-    @JoinColumn(name = "comment_id", nullable = true)
-    private Comment comment;
+    @Column(name = "entity_id", nullable = true)
+    private Long entityId;
 
-    @ManyToOne
-    @JoinColumn(name = "message_id", nullable = true)
-    private Message message;
+    public Like(String entityType, Long entityId){
+        this.entityType = entityType;
+        this.entityId=entityId;
+    }
 }

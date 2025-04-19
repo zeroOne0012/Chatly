@@ -19,9 +19,8 @@ public class ArticleDto {
     private String title;
     private String content;
     private LocalDateTime createdAt;
-    private int likeCount;  // 좋아요 개수
+    private Long likes;  // 좋아요 개수
     private String memberId;
-    private Integer likes;
     private List<String> fileUrls;  // 파일 URL 리스트
 
     
@@ -31,9 +30,8 @@ public class ArticleDto {
             article.getTitle(),
             article.getContent(),
             article.getCreatedAt(),
-            article.getLikes().size(),  // 좋아요 개수
+            article.getLikes(),  // 좋아요 개수
             article.getMember().getId(),
-            article.getLikes().size(),
             article.getFiles().stream()
                 .map(File::getFileUrl)  // 파일 URL 리스트
                 .collect(Collectors.toList())
