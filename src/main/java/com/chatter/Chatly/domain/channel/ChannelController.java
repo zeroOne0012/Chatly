@@ -4,8 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chatter.Chatly.annotation.RequirePrivilege;
-import com.chatter.Chatly.dto.ChannelDto;
-import com.chatter.Chatly.dto.ChannelRequestDto;
+import com.chatter.Chatly.domain.channel.dto.ChannelDto;
+import com.chatter.Chatly.domain.channel.dto.ChannelRequestDto;
 
 import java.util.List;
 

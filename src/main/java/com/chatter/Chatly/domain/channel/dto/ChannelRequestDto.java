@@ -1,4 +1,4 @@
-package com.chatter.Chatly.dto;
+package com.chatter.Chatly.domain.channel.dto;
 
 import com.chatter.Chatly.domain.channel.Channel;
 

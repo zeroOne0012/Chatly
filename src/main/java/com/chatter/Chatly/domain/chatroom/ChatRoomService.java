@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.chatter.Chatly.domain.channel.Channel;
 import com.chatter.Chatly.domain.channel.ChannelRepository;
-import com.chatter.Chatly.dto.ChatRoomDto;
-import com.chatter.Chatly.dto.ChatRoomRequestDto;
+import com.chatter.Chatly.domain.chatroom.dto.ChatRoomDto;
+import com.chatter.Chatly.domain.chatroom.dto.ChatRoomRequestDto;
 import com.chatter.Chatly.exception.CommonErrorCode;
 import com.chatter.Chatly.exception.HttpException;
 

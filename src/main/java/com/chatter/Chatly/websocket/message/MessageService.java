@@ -53,6 +53,7 @@ public class MessageService {
                 .message(dto.getMessage())
                 .member(member)
                 .chatRoom(chatRoom)
+                .likes(0L)
 //                .files(dto.getFileUrl()==null ? null : new ArrayList<>(dto.getFileUrl().stream().map(File::getFileUrl).toList()))
                 .files(null)
                 .build();

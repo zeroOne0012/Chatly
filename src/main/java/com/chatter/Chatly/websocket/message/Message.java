@@ -5,12 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.chatter.Chatly.domain.chatroom.ChatRoom;
 import com.chatter.Chatly.domain.entity.File;
-import com.chatter.Chatly.domain.entity.Likes;
 import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;
@@ -43,8 +40,8 @@ public class Message {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Likes> likes = new ArrayList<>();
+    @Column
+    private Long likes;
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files = new ArrayList<>();

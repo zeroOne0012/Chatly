@@ -20,7 +20,7 @@ import com.chatter.Chatly.domain.channelmember.ChannelMember;
 import com.chatter.Chatly.domain.channelmember.ChannelMemberService;
 import com.chatter.Chatly.domain.common.Ownable;
 import com.chatter.Chatly.domain.common.Role;
-import com.chatter.Chatly.dto.TargetsDto;
+import com.chatter.Chatly.domain.common.dto.TargetsDto;
 import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.persistence.EntityManager;

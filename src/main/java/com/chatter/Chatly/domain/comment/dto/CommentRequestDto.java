@@ -1,8 +1,7 @@
-package com.chatter.Chatly.dto;
+package com.chatter.Chatly.domain.comment.dto;
 
 import com.chatter.Chatly.domain.comment.Comment;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

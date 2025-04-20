@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.chatter.Chatly.annotation.CheckAccessPossession;
 import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
-import com.chatter.Chatly.dto.ArticleDto;
-import com.chatter.Chatly.dto.ArticleRequestDto;
-import com.chatter.Chatly.dto.TargetsDto;
+import com.chatter.Chatly.domain.article.dto.ArticleDto;
+import com.chatter.Chatly.domain.article.dto.ArticleRequestDto;
+import com.chatter.Chatly.domain.common.dto.TargetsDto;
 
 
 

@@ -13,7 +13,6 @@ import com.chatter.Chatly.domain.channel.Channel;
 import com.chatter.Chatly.domain.comment.Comment;
 import com.chatter.Chatly.domain.common.Ownable;
 import com.chatter.Chatly.domain.entity.File;
-import com.chatter.Chatly.domain.entity.Likes;
 import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;
@@ -54,8 +53,8 @@ public class Article implements Ownable<String>{
     // @JoinColumn(name = "channel_member_id")
     // private ChannelMember channelMember;
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Likes> likes = new ArrayList<>();
+    @Column
+    private Long likes;
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files = new ArrayList<>();
@@ -63,6 +62,7 @@ public class Article implements Ownable<String>{
     public Article(String title, String content) {
         this.title = title;
         this.content = content;
+        this.likes = 0L;
     }
     public void update(Article article) {
         this.title = article.title;

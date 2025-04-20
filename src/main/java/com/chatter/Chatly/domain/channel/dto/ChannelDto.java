@@ -1,4 +1,4 @@
-package com.chatter.Chatly.dto;
+package com.chatter.Chatly.domain.channel.dto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.chatter.Chatly.domain.channel.Channel;
 
+import com.chatter.Chatly.domain.channelmember.dto.ChannelMemberDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

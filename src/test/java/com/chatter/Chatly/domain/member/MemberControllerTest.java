@@ -6,11 +6,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,8 +25,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.chatter.Chatly.dto.MemberDto;
-import com.chatter.Chatly.dto.MemberRequestDto;
+import com.chatter.Chatly.domain.member.dto.MemberDto;
+import com.chatter.Chatly.domain.member.dto.MemberRequestDto;
 import com.chatter.Chatly.testUtil.TestEntitySetter;
 import com.chatter.Chatly.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;

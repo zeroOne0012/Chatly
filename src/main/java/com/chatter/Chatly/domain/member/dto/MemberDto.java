@@ -1,4 +1,4 @@
-package com.chatter.Chatly.dto;
+package com.chatter.Chatly.domain.member.dto;
 
 import com.chatter.Chatly.domain.member.Member;
 

@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.chatter.Chatly.domain.article.Article;
 import com.chatter.Chatly.domain.common.Ownable;
-import com.chatter.Chatly.domain.entity.Likes;
 import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;
@@ -42,11 +41,12 @@ public class Comment implements Ownable<String>{
     @JoinColumn(name="member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Likes> likes = new ArrayList<>();
+    @Column
+    private Long likes;
 
     public Comment(String content){
         this.content = content;
+        this.likes = 0L;
     }
 
     public void update(Comment comment){
