@@ -1,7 +1,10 @@
 package com.chatter.Chatly.domain.channelmember;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.chatter.Chatly.domain.like.Like;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -33,7 +36,10 @@ public class ChannelMember {
     private Member member;
 
     @Enumerated(EnumType.STRING)
-    private Role role;  
+    private Role role;
+
+    @OneToMany(mappedBy = "channelMember", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Like> likes = new HashSet<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

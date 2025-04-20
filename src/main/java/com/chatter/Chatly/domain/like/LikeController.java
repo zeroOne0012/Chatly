@@ -1,6 +1,7 @@
 package com.chatter.Chatly.domain.like;
 
 import com.chatter.Chatly.annotation.CheckAccessPossession;
+import com.chatter.Chatly.annotation.RequireOwnership;
 import com.chatter.Chatly.annotation.RequirePrivilege;
 import com.chatter.Chatly.domain.chatroom.ChatRoomService;
 import com.chatter.Chatly.domain.like.dto.LikeDto;
@@ -20,13 +21,14 @@ import java.util.List;
 public class LikeController {
     private final LikeService likeService;
     @PostMapping
-    public ResponseEntity<LikeDto> createLike(@PathVariable("cid") Long cid, LikeRequestDto dto){
+//    @RequireOwnership(entityClass = ., argIdx = .)
+    public ResponseEntity<LikeDto> createLike(@PathVariable("cid") Long cid,@RequestBody LikeRequestDto dto){
         LikeDto like = likeService.createLike(cid, dto);
         return ResponseEntity.ok(like);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<LikeDto> deleteLike(@PathVariable("cid") Long cid, @PathVariable("id") Long id){
-        LikeDto like = likeService.deleteLike(cid, id);
-        return ResponseEntity.ok(like);
+        likeService.deleteLike(cid, id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -46,6 +46,7 @@ public class Comment implements Ownable<String>{
 
     public Comment(String content){
         this.content = content;
+        this.likes = 0L;
     }
 
     public void update(Comment comment){

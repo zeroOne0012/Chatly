@@ -62,6 +62,7 @@ public class Article implements Ownable<String>{
     public Article(String title, String content) {
         this.title = title;
         this.content = content;
+        this.likes = 0L;
     }
     public void update(Article article) {
         this.title = article.title;

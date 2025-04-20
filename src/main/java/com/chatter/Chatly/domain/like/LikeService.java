@@ -69,6 +69,18 @@ public class LikeService {
 
     }
 
+    // conflict 검사
+    private boolean isConstraintViolation(Exception e) {
+        // DataIntegrityViolationException ?
+        Throwable cause = e.getCause();
+        while (cause != null) {
+            if (cause instanceof org.hibernate.exception.ConstraintViolationException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
+    }
 
     public LikeDto createLike(Long cid, LikeRequestDto dto){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -77,7 +89,15 @@ public class LikeService {
 //                .orElseThrow(()->new HttpException(CommonErrorCode.NOT_FOUND, Member.class, memberId));
         ChannelMember channelMember = channelMemberService.isJoined(cid, memberId);
         Like like = new Like(channelMember, dto.getEntityType(), dto.getEntityId());
-        Like created = likeRepository.save(like);
+        Like created;
+        try{
+            created = likeRepository.save(like);
+        } catch (Exception e){ // conflict 검사
+            if (isConstraintViolation(e)) {
+                throw new HttpException(CommonErrorCode.CONFLICT, Like.class, channelMember.getMember().getId()+", "+dto.getEntityType()+", "+dto.getEntityId()); // 혹은 기존 데이터 조회 후 반환
+            }
+            throw new HttpException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+        }
 
 
         // get class name
@@ -86,11 +106,23 @@ public class LikeService {
 
         // like count
         Object entity = entityManager.find(className, dto.getEntityId());
+        if(entity==null) throw new HttpException(CommonErrorCode.NOT_FOUND, className, dto.getEntityId());
         incrementLikes(entity, true);
 
         return LikeDto.from(created);
     }
-    public LikeDto deleteLike(Long cid, Long likeId){
-        return null;
+    public void deleteLike(Long cid, Long likeId){
+        Like like = likeRepository.findById(likeId)
+                .orElseThrow(()->new HttpException(CommonErrorCode.NOT_FOUND, Like.class, likeId));
+        likeRepository.delete(like);
+
+        // get class name
+        Class<?> className = ENTITY_TYPE_MAP.get(like.getEntityType().toUpperCase());
+        if (className == null) throw new HttpException(CommonErrorCode.INVALID_PARAMETER);
+
+        // like count
+        Object entity = entityManager.find(className, like.getEntityId());
+        if(entity==null) throw new HttpException(CommonErrorCode.NOT_FOUND, className, like.getEntityId());
+        incrementLikes(entity, false);
     }
 }
