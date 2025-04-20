@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"member_id", "entity_type", "entity_id"})
+    @UniqueConstraint(columnNames = {"channel_member_id", "entity_type", "entity_id"})
 })
 public class Like {
     @Id
@@ -21,17 +21,18 @@ public class Like {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "channel_member_id")
+    @JoinColumn(name = "channel_member_id", nullable = false )
     private ChannelMember channelMember;
 
-    @Column(name = "entity_type", nullable = true)
+    @Column(name = "entity_type", nullable = false )
     private String entityType;
 
-    @Column(name = "entity_id", nullable = true)
+    @Column(name = "entity_id", nullable = false )
     private Long entityId;
 
-    public Like(String entityType, Long entityId){
+    public Like(ChannelMember channelMember, String entityType, Long entityId){
+        this.channelMember = channelMember;
         this.entityType = entityType;
-        this.entityId=entityId;
+        this.entityId = entityId;
     }
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 public class LikeRequestDto {
     private String entityType;
     private Long entityId;
-    public Like toEntity(){
-        return new Like(entityType, entityId);
-    }
+//    public Like toEntity(){
+//        return new Like(entityType, entityId);
+//    }
 }

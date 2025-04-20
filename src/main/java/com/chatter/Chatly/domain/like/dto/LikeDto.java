@@ -12,7 +12,7 @@ public class LikeDto {
     private Long channelId;
     private String entityType;
     private Long entityId;
-    public LikeDto from(Like like){
+    public static LikeDto from(Like like){
         return new LikeDto(
                 like.getId(),
                 like.getChannelMember().getMember().getId(),
