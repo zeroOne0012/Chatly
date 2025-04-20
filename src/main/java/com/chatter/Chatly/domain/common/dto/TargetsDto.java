@@ -1,4 +1,4 @@
-package com.chatter.Chatly.dto;
+package com.chatter.Chatly.domain.common.dto;
 
 import java.util.List;
 

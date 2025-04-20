@@ -1,4 +1,4 @@
-package com.chatter.Chatly.dto;
+package com.chatter.Chatly.domain.channelmember.dto;
 
 import com.chatter.Chatly.domain.channelmember.ChannelMember;
 import com.chatter.Chatly.domain.common.Role;

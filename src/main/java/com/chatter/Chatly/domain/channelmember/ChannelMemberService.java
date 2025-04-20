@@ -10,7 +10,7 @@ import com.chatter.Chatly.domain.channel.ChannelRepository;
 import com.chatter.Chatly.domain.common.Role;
 import com.chatter.Chatly.domain.member.Member;
 import com.chatter.Chatly.domain.member.MemberRepository;
-import com.chatter.Chatly.dto.ChannelMemberDto;
+import com.chatter.Chatly.domain.channelmember.dto.ChannelMemberDto;
 import com.chatter.Chatly.exception.CommonErrorCode;
 import com.chatter.Chatly.exception.HttpException;
 import com.chatter.Chatly.util.MemberContext;

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chatter.Chatly.dto.MemberDto;
-import com.chatter.Chatly.dto.MemberRequestDto;
+import com.chatter.Chatly.domain.member.dto.MemberDto;
+import com.chatter.Chatly.domain.member.dto.MemberRequestDto;
 
 @RestController
 @RequestMapping("/api/member")

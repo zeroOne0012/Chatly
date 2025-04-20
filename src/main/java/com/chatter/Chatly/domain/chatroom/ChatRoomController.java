@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chatter.Chatly.annotation.CheckAccessPossession;
 import com.chatter.Chatly.annotation.RequirePrivilege;
-import com.chatter.Chatly.dto.ChatRoomDto;
-import com.chatter.Chatly.dto.ChatRoomRequestDto;
+import com.chatter.Chatly.domain.chatroom.dto.ChatRoomDto;
+import com.chatter.Chatly.domain.chatroom.dto.ChatRoomRequestDto;
 
 @RestController
 @RequestMapping("/api/channel/{cid}/chatroom")

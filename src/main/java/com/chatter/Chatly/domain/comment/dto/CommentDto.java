@@ -1,4 +1,4 @@
-package com.chatter.Chatly.dto;
+package com.chatter.Chatly.domain.comment.dto;
 
 import java.time.LocalDateTime;
 

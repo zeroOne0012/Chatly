@@ -7,8 +7,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.chatter.Chatly.dto.MemberDto;
-import com.chatter.Chatly.dto.MemberRequestDto;
+import com.chatter.Chatly.domain.member.dto.MemberDto;
+import com.chatter.Chatly.domain.member.dto.MemberRequestDto;
 import com.chatter.Chatly.exception.CommonErrorCode;
 import com.chatter.Chatly.exception.HttpException;
 import com.chatter.Chatly.util.MemberContext;
