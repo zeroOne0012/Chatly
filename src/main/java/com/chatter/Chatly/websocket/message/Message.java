@@ -7,7 +7,7 @@ import java.util.List;
 import lombok.*;
 
 import com.chatter.Chatly.domain.chatroom.ChatRoom;
-import com.chatter.Chatly.domain.entity.File;
+import com.chatter.Chatly.domain.attachment.Attachment;
 import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;
@@ -44,7 +44,7 @@ public class Message {
     private Long likes;
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<File> files = new ArrayList<>();
+    private List<Attachment> files = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

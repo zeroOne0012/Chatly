@@ -1,6 +1,6 @@
 package com.chatter.Chatly.websocket.message.dto;
 
-import com.chatter.Chatly.domain.entity.File;
+import com.chatter.Chatly.domain.attachment.Attachment;
 import com.chatter.Chatly.websocket.message.Message;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +26,7 @@ public class MessageDto {
                 message.getCreatedAt(),
                 message.getMember().getId(),
                 message.getChatRoom().getId(),
-                message.getFiles() == null ? null : new ArrayList<>(message.getFiles().stream().map(File::getFileUrl).toList()) // 깊은 복사
+                message.getFiles() == null ? null : new ArrayList<>(message.getFiles().stream().map(Attachment::getFileUrl).toList()) // 깊은 복사
         );
     }
 }

@@ -1,22 +1,16 @@
  package com.chatter.Chatly.websocket.message;
 
- import com.chatter.Chatly.domain.chatroom.ChatRoom;
  import com.chatter.Chatly.domain.chatroom.ChatRoomRepository;
- import com.chatter.Chatly.domain.entity.File;
- import com.chatter.Chatly.domain.member.Member;
  import com.chatter.Chatly.domain.member.MemberRepository;
  import com.chatter.Chatly.websocket.message.dto.MessageDto;
  import com.chatter.Chatly.websocket.message.dto.MessageRequestDto;
  import jakarta.transaction.Transactional;
  import lombok.AllArgsConstructor;
- import org.springframework.messaging.handler.annotation.Header;
  import org.springframework.messaging.handler.annotation.MessageMapping;
- import org.springframework.messaging.handler.annotation.SendTo;
  import org.springframework.messaging.simp.SimpMessagingTemplate;
  import org.springframework.stereotype.Controller;
 
  import java.security.Principal;
- import java.util.ArrayList;
 
  @Controller
  @AllArgsConstructor
