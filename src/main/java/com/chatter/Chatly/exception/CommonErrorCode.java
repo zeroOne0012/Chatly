@@ -23,6 +23,8 @@ public enum CommonErrorCode {
     REQUIRED_FIELD_EMPTY(HttpStatus.BAD_REQUEST, "Required field is empty."),
     
     SAVE_FAILED(HttpStatus.NOT_FOUND, "Failed to save data"),
+
+    IO_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "IO Exception"),
     
     INVALID_VALUE(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid value"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");

@@ -30,6 +30,10 @@ public class AttachmentService {
 
     public void deleteByEntity(String entityType, Long entityId) {
         List<Attachment> attachments = attachmentRepository.findByEntityTypeAndEntityId(entityType, entityId);
+        attachments
+            .forEach(attachment -> {
+                fileStorageService.delete(attachment.getFileName());
+            });
         attachmentRepository.deleteAll(attachments);
     }
 }

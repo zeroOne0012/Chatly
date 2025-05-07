@@ -26,9 +26,21 @@ public class FileStorageService {
             Path filePath = uploadDir.resolve(filename);
             Files.copy(file.getInputStream(), filePath);
 
-            return "/uploads/" + filename;
+            return filename;
         } catch (IOException e) {
             throw new HttpException(CommonErrorCode.SAVE_FAILED, Attachment.class, e.getMessage());
+        }
+    }
+    public void delete(String filename) {
+        try {
+            Path filePath = uploadDir.resolve(filename);
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+            } else {
+                throw new HttpException(CommonErrorCode.NOT_FOUND, Attachment.class, filename);
+            }
+        } catch (IOException e) {
+            throw new HttpException(CommonErrorCode.IO_EXCEPTION, Attachment.class, e.getMessage());
         }
     }
 }

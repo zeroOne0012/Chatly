@@ -1,5 +1,7 @@
 @echo off
 
+@REM .\start.bat dev false
+
 REM 기본값 dev
 set PROFILE=%1
 if "%PROFILE%"=="" (

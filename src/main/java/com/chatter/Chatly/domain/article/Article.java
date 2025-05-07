@@ -58,7 +58,8 @@ public class Article implements Ownable<String>{
     @Column
     private Long likes;
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient // 해당 필드 JPA가 DB에 매핑되지 않게 무시함
     private List<Attachment> files = new ArrayList<>();
 
     public Article(String title, String content) {

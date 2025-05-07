@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @ToString
@@ -17,7 +18,7 @@ import lombok.ToString;
 public class ArticleRequestDto {
     private String title;
     private String content;
-    private List<String> fileUrls = new ArrayList<>(); // 파일 먼저 업로드
+    private List<MultipartFile> files = new ArrayList<>(); // 파일 먼저 업로드
 
     public Article toEntity() {
         return new Article(title, content);

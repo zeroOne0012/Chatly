@@ -3,6 +3,9 @@ package com.chatter.Chatly.domain.article;
 import java.util.List;
 import java.util.Objects;
 
+import com.chatter.Chatly.domain.attachment.Attachment;
+import com.chatter.Chatly.domain.attachment.AttachmentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.chatter.Chatly.domain.channel.Channel;
@@ -20,6 +23,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class ArticleService {
@@ -27,17 +31,8 @@ public class ArticleService {
     private final ChannelRepository channelRepository;
     private final MemberRepository memberRepository;
     private final MemberContext memberContext;
-    public ArticleService(
-        ArticleRepository articleRepository,
-        ChannelRepository channelRepository, 
-        MemberRepository memberRepository,
-        MemberContext memberContext
-        ) {
-        this.articleRepository = articleRepository;
-        this.channelRepository = channelRepository;
-        this.memberRepository = memberRepository;
-        this.memberContext = memberContext;
-    }
+    private final AttachmentService attachmentService;
+
     
     public List<ArticleDto> getAllArticle(Long cid) {
         Channel channel = channelRepository.findById(cid)
@@ -90,9 +85,16 @@ public class ArticleService {
             .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Member.class, mid)); 
         article.setChannel(channel);
         article.setMember(member);
-        // save
+
+
+        // save article
         Article savedArticle = articleRepository.save(article);
         if(savedArticle==null) throw new HttpException(CommonErrorCode.SAVE_FAILED, Article.class, "");
+
+        // files
+        List<Attachment> attachments = attachmentService.saveFiles("ARTICLE", savedArticle.getId(), dto.getFiles());
+        savedArticle.setFiles(attachments);
+
         return ArticleDto.from(savedArticle);
     }
 
@@ -103,7 +105,15 @@ public class ArticleService {
         if(!Objects.equals(target.getChannel().getId(), cid)){ // 채널 아이디 일치하지 않으면
             throw new HttpException(CommonErrorCode.CHANNEL_ARTICLE_NOT_FOUND);
         }
+
+        // 기존 파일 삭제
+        attachmentService.deleteByEntity("ARTICLE", target.getId());
+        // 새로운 파일 저장
+        List<Attachment> attachments = attachmentService.saveFiles("ARTICLE", target.getId(), requestDto.getFiles());
+
         target.update(article);
+        target.setFiles(attachments); // 연관관계 갱신
+
         return ArticleDto.from(target);
     }
     
@@ -116,6 +126,7 @@ public class ArticleService {
             if (!Objects.equals(article.getChannel().getId(), cid)) {
                 throw new HttpException(CommonErrorCode.CHANNEL_ARTICLE_NOT_FOUND);
             }
+            attachmentService.deleteByEntity("ARTICLE", article.getId());
             articleRepository.delete(article);
         });
     }
