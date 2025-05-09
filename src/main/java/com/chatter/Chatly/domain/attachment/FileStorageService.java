@@ -16,28 +16,30 @@ public class FileStorageService {
 
     private final Path uploadDir = Paths.get("uploads");
 
-    public String save(MultipartFile file) {
+    public String save(MultipartFile file, String fileName) {
         try {
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
 
-            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path filePath = uploadDir.resolve(filename);
+//            String fileName = UUID.randomUUID() + "_" + file.getOriginalFileName();
+            Path filePath = uploadDir.resolve(fileName);
             Files.copy(file.getInputStream(), filePath);
 
-            return filename;
+            return "/uploads/" + fileName;
         } catch (IOException e) {
-            throw new HttpException(CommonErrorCode.SAVE_FAILED, Attachment.class, e.getMessage());
+            throw new HttpException(CommonErrorCode.IO_EXCEPTION, Attachment.class, e.getMessage());
         }
     }
-    public void delete(String filename) {
+    public void delete(String fileUrl) {
         try {
-            Path filePath = uploadDir.resolve(filename);
+//            Path filePath = uploadDir.resolve(filename);
+            Path filePath = Paths.get(fileUrl);
             if (Files.exists(filePath)) {
                 Files.delete(filePath);
             } else {
-                throw new HttpException(CommonErrorCode.NOT_FOUND, Attachment.class, filename);
+//                throw new HttpException(CommonErrorCode.NOT_FOUND, Attachment.class, filename);
+                throw new HttpException(CommonErrorCode.NOT_FOUND, Attachment.class, fileUrl);
             }
         } catch (IOException e) {
             throw new HttpException(CommonErrorCode.IO_EXCEPTION, Attachment.class, e.getMessage());

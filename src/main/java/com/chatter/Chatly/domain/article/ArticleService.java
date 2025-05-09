@@ -3,6 +3,7 @@ package com.chatter.Chatly.domain.article;
 import java.util.List;
 import java.util.Objects;
 
+import com.chatter.Chatly.domain.article.dto.ArticleUpdateRequestDto;
 import com.chatter.Chatly.domain.attachment.Attachment;
 import com.chatter.Chatly.domain.attachment.AttachmentService;
 import lombok.RequiredArgsConstructor;
@@ -98,7 +99,7 @@ public class ArticleService {
         return ArticleDto.from(savedArticle);
     }
 
-    public ArticleDto updateArticle(Long cid, Long id, ArticleRequestDto requestDto) {
+    public ArticleDto updateArticle(Long cid, Long id, ArticleUpdateRequestDto requestDto) {
         Article article = requestDto.toEntity();
         Article target = articleRepository.findById(id)
             .orElseThrow(() -> new HttpException(CommonErrorCode.NOT_FOUND, Article.class, id));
@@ -106,13 +107,15 @@ public class ArticleService {
             throw new HttpException(CommonErrorCode.CHANNEL_ARTICLE_NOT_FOUND);
         }
 
-        // 기존 파일 삭제
-        attachmentService.deleteByEntity("ARTICLE", target.getId());
-        // 새로운 파일 저장
-        List<Attachment> attachments = attachmentService.saveFiles("ARTICLE", target.getId(), requestDto.getFiles());
+//        // 기존 파일 삭제
+//        attachmentService.deleteByEntity("ARTICLE", target.getId());
+//        // 새로운 파일 저장
+//        List<Attachment> attachments = attachmentService.saveFiles("ARTICLE", target.getId(), requestDto.getFiles());
+        List<Attachment> attachments = attachmentService.updateFiles("ARTICLE", target.getId(), requestDto.getFiles(), requestDto.getRetainedAttachmentIds());
 
         target.update(article);
-        target.setFiles(attachments); // 연관관계 갱신
+//        target.setFiles(attachments); // 연관관계 갱신
+        target.getFiles().addAll(attachments); // 추가된 파일 갱신 (삭제는 attachmentsService 에서)
 
         return ArticleDto.from(target);
     }

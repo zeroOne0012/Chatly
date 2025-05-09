@@ -2,6 +2,7 @@ package com.chatter.Chatly.domain.article;
 
 import java.util.List;
 
+import com.chatter.Chatly.domain.article.dto.ArticleUpdateRequestDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,7 +61,7 @@ public class ArticleController {
     @PutMapping("/{id}")
     // @RequirePrivilege
     @RequireOwnership(entityClass = Article.class, argIdx = 1)
-    public ResponseEntity<ArticleDto> updateArticle(@PathVariable("cid") Long cid, @PathVariable("id") Long id, @RequestBody ArticleRequestDto requestDto) {
+    public ResponseEntity<ArticleDto> updateArticle(@PathVariable("cid") Long cid, @PathVariable("id") Long id, @RequestBody ArticleUpdateRequestDto requestDto) {
         ArticleDto article = articleService.updateArticle(cid, id, requestDto);
         return ResponseEntity.ok(article);
 
