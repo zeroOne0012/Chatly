@@ -14,6 +14,9 @@ public class AttachmentService {
     private final FileStorageService fileStorageService;
     // attachments 개수 제한?
 
+    // attachment를 포함하는 entity GET에서 수동적으로 Attachment 불러와줘야 함(다형성 구조)
+
+
     public List<Attachment> saveFiles(String entityType, Long entityId, List<MultipartFile> files) {
 
         if (files == null) return List.of();

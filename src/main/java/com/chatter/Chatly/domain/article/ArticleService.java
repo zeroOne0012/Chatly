@@ -1,10 +1,12 @@
 package com.chatter.Chatly.domain.article;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import com.chatter.Chatly.domain.article.dto.ArticleUpdateRequestDto;
 import com.chatter.Chatly.domain.attachment.Attachment;
+import com.chatter.Chatly.domain.attachment.AttachmentRepository;
 import com.chatter.Chatly.domain.attachment.AttachmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class ArticleService {
     private final MemberRepository memberRepository;
     private final MemberContext memberContext;
     private final AttachmentService attachmentService;
+    private final AttachmentRepository attachmentRepository;
 
     
     public List<ArticleDto> getAllArticle(Long cid) {
@@ -61,9 +64,33 @@ public class ArticleService {
         .toList();
     }
 
-    public ArticleDto getArticleById(Long cid, Long id) {
+    private Article getArticle(Long id){
         Article article = articleRepository.findById(id)
-        .orElseThrow(() ->  new HttpException(CommonErrorCode.NOT_FOUND, Article.class, id));
+            .orElseThrow(() ->  new HttpException(CommonErrorCode.NOT_FOUND, Article.class, id));
+
+        // 수동 attachment 주입
+        List<Attachment> files = attachmentRepository.findByEntityTypeAndEntityId("ARTICLE", article.getId());
+        if(files==null){
+            article.setFiles(new ArrayList<>(List.of()));
+        }else{
+            article.setFiles(files);
+        }
+
+        return article;
+    }
+
+    public ArticleDto getArticleById(Long cid, Long id) {
+//        Article article = articleRepository.findById(id)
+//        .orElseThrow(() ->  new HttpException(CommonErrorCode.NOT_FOUND, Article.class, id));
+
+//        // 수동 attachment 주입
+//        List<Attachment> files = attachmentRepository.findByEntityTypeAndEntityId("ARTICLE", article.getId());
+//        if(files==null){
+//            article.setFiles(new ArrayList<>(List.of()));
+//        }else{
+//            article.setFiles(files);
+//        }
+        Article article = getArticle(id);
 
         if(!Objects.equals(article.getChannel().getId(), cid)){ // 채널 아이디 일치하지 않으면
             throw new HttpException(CommonErrorCode.CHANNEL_ARTICLE_NOT_FOUND);
