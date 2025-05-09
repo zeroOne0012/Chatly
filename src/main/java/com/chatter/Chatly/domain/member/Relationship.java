@@ -1,4 +1,4 @@
-package com.chatter.Chatly.domain.entity;
+package com.chatter.Chatly.domain.member;
 
 import java.time.LocalDateTime;
 
@@ -6,7 +6,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.chatter.Chatly.domain.common.FriendState;
-import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import lombok.Getter;
 @Entity
 @Getter
 @EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화 (@CreatedDate)
-public class Friend {
+public class Relationship {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
