@@ -20,6 +20,7 @@ public enum CommonErrorCode {
     CHANNEL_ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "Article does not belong to the channel"),
     CHANNEL_CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "ChatRoom does not belong to the channel"),
     ARTICLE_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Comment does not belong to the article"),
+    CHATROOM_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "Message does not belong to the chatroom"),
     REQUIRED_FIELD_EMPTY(HttpStatus.BAD_REQUEST, "Required field is empty."),
     
     SAVE_FAILED(HttpStatus.NOT_FOUND, "Failed to save data"),

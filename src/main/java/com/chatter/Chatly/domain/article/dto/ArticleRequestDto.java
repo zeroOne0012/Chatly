@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ArticleRequestDto {
     private String title;
     private String content;
-    private List<MultipartFile> files = new ArrayList<>(); // 파일 먼저 업로드
+    private List<MultipartFile> files = new ArrayList<>();
 
     public Article toEntity() {
         return new Article(title, content);
