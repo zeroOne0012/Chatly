@@ -7,7 +7,7 @@ import java.util.List;
 import lombok.*;
 
 import com.chatter.Chatly.domain.chatroom.ChatRoom;
-import com.chatter.Chatly.domain.entity.File;
+import com.chatter.Chatly.domain.attachment.Attachment;
 import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;
@@ -43,8 +43,9 @@ public class Message {
     @Column
     private Long likes;
 
-    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<File> files = new ArrayList<>();
+//    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient // 해당 필드 JPA가 DB에 매핑되지 않게 무시함
+    private List<Attachment> files = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

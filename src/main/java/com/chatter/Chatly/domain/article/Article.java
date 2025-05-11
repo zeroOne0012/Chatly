@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.chatter.Chatly.domain.channel.Channel;
 import com.chatter.Chatly.domain.comment.Comment;
 import com.chatter.Chatly.domain.common.Ownable;
-import com.chatter.Chatly.domain.entity.File;
+import com.chatter.Chatly.domain.attachment.Attachment;
 import com.chatter.Chatly.domain.member.Member;
 
 import jakarta.persistence.*;
@@ -32,7 +32,9 @@ public class Article implements Ownable<String>{
 
     @Column(nullable = false)
     private String title;
-    @Column(nullable = false)
+
+    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @CreatedDate
@@ -56,8 +58,9 @@ public class Article implements Ownable<String>{
     @Column
     private Long likes;
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<File> files = new ArrayList<>();
+//    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient // 해당 필드 JPA가 DB에 매핑되지 않게 무시함
+    private List<Attachment> files = new ArrayList<>();
 
     public Article(String title, String content) {
         this.title = title;
@@ -67,8 +70,8 @@ public class Article implements Ownable<String>{
     public void update(Article article) {
         this.title = article.title;
         this.content = article.content;
-        this.files.clear(); // 깊은 복사; 기존 리스트 비우고 새 파일 리스트 추가가
-        this.files.addAll(article.files); // 얉은 복사 시 orphanRemoval = true가 설정되어 있으면 자동 삭제?
+        this.files.clear(); // 깊은 복사; 기존 리스트 비우고 새 파일 리스트 추가
+        this.files.addAll(article.files); // 얉은 복사 시 orphanRemoval = true 가 설정 되어 있으면 자동 삭제?
     }
 
     @Override
