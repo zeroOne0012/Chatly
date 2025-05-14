@@ -13,6 +13,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.chatter.Chatly.util.MemberContext;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -30,7 +32,8 @@ public class SecurityConfig {
         return httpSecurity
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(cors -> {}) // SecurityFilterChain에서 명시적으로 CORS 허용 필요
+//                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers("/api/auth/login", "/api/member/register").permitAll();
                     requests.requestMatchers("/ws").permitAll(); // ws 메시지 -> 따로 인증 처리
@@ -48,4 +51,18 @@ public class SecurityConfig {
                 .build();
     }
 
+}
+
+
+@Configuration
+class WebCorsConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:5173") // Vite dev server
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
 }

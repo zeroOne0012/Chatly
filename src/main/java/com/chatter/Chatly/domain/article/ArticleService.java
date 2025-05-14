@@ -71,9 +71,9 @@ public class ArticleService {
     }
 
     public ArticleDto createArticle(Long cid, ArticleRequestDto dto) { // 파일 저장 로직 추가 필요
-        if (dto.getTitle()==null || dto.getContent()==null) {
-            throw new HttpException(CommonErrorCode.REQUIRED_FIELD_EMPTY);
-        }
+//        if (dto.getTitle()==null || dto.getContent()==null) {
+//            throw new HttpException(CommonErrorCode.REQUIRED_FIELD_EMPTY);
+//        }
         Article article = dto.toEntity();
 
         // 헤더에서 유저 정보 가져오기

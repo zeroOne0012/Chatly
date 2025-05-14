@@ -2,15 +2,9 @@ package com.chatter.Chatly.domain.article;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.chatter.Chatly.annotation.CheckAccessPossession;
 import com.chatter.Chatly.annotation.RequireOwnership;
@@ -50,9 +44,11 @@ public class ArticleController {
         return ResponseEntity.ok(article);
     }
 
-    @PostMapping
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @CheckAccessPossession
-    public ResponseEntity<ArticleDto> createArticle(@PathVariable("cid") Long cid, @RequestBody ArticleRequestDto requestDto) {
+    public ResponseEntity<ArticleDto> createArticle(@PathVariable("cid") Long cid, @ModelAttribute ArticleRequestDto requestDto) {
+        System.out.println("Uploaded files: " + requestDto.getFiles().size());
+        System.out.println("testetsetstetsetdebugdebug: " + requestDto.getTitle() + " tttt " + requestDto.getContent());
         ArticleDto article = articleService.createArticle(cid, requestDto);
         return ResponseEntity.ok(article);
     }

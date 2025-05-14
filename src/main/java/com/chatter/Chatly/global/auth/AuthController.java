@@ -28,6 +28,12 @@ public class AuthController {
         res.put("token", token);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
-    
+
+    @PostMapping("/logout")
+    public ResponseEntity<HashMap<String, String>> logout() {
+        HashMap<String, String> res = new HashMap<>();
+        res.put("message", "logout success");
+        return ResponseEntity.ok(res);
+    }
 
 }
