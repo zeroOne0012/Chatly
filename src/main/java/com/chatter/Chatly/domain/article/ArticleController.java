@@ -1,17 +1,12 @@
 package com.chatter.Chatly.domain.article;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.chatter.Chatly.domain.article.dto.ArticleUpdateRequestDto;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.chatter.Chatly.annotation.CheckAccessPossession;
 import com.chatter.Chatly.annotation.RequireOwnership;
@@ -19,7 +14,7 @@ import com.chatter.Chatly.annotation.RequirePrivilege;
 import com.chatter.Chatly.domain.article.dto.ArticleDto;
 import com.chatter.Chatly.domain.article.dto.ArticleRequestDto;
 import com.chatter.Chatly.domain.common.dto.TargetsDto;
-
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -51,10 +46,23 @@ public class ArticleController {
         return ResponseEntity.ok(article);
     }
 
-    @PostMapping
+//    @PostMapping(consumes = {"multipart/form-data"})
+//    @CheckAccessPossession
+//    public ResponseEntity<ArticleDto> createArticle(@PathVariable("cid") Long cid, @RequestPart(value="dto") ArticleRequestDto requestDto, @RequestPart(value="files") List<MultipartFile> multipartFiles) {
+//        ArticleDto article = articleService.createArticle(cid, requestDto, multipartFiles);
+//        return ResponseEntity.ok(article);
+//    }
+
+    @PostMapping(value = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @CheckAccessPossession
-    public ResponseEntity<ArticleDto> createArticle(@PathVariable("cid") Long cid, @RequestBody ArticleRequestDto requestDto) {
-        ArticleDto article = articleService.createArticle(cid, requestDto);
+    public ResponseEntity<ArticleDto> createArticle(@PathVariable("cid") Long cid,
+//                                                    @RequestPart("requestDto") ArticleRequestDto requestDto,
+                                                    @RequestPart(value ="file", required=false) MultipartFile multipartFile) {
+        List<MultipartFile> multipartFiles = new ArrayList<>(List.of(multipartFile));
+        System.out.println("DEBUG_FIRST");
+
+        ArticleRequestDto requestDto = new ArticleRequestDto("title", "content");
+        ArticleDto article = articleService.createArticle(cid, requestDto, multipartFiles);
         return ResponseEntity.ok(article);
     }
 

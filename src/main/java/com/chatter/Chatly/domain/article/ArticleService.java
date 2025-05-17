@@ -24,6 +24,7 @@ import com.chatter.Chatly.util.MemberContext;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -98,10 +99,10 @@ public class ArticleService {
         return ArticleDto.from(article);
     }
 
-    public ArticleDto createArticle(Long cid, ArticleRequestDto dto) { // 파일 저장 로직 추가 필요
-        if (dto.getTitle()==null || dto.getContent()==null) {
-            throw new HttpException(CommonErrorCode.REQUIRED_FIELD_EMPTY);
-        }
+    public ArticleDto createArticle(Long cid, ArticleRequestDto dto, List<MultipartFile> multipartFiles) { // 파일 저장 로직 추가 필요
+//        if (dto.getTitle()==null || dto.getContent()==null) {
+//            throw new HttpException(CommonErrorCode.REQUIRED_FIELD_EMPTY);
+//        }
         Article article = dto.toEntity();
 
         // 헤더에서 유저 정보 가져오기
@@ -120,9 +121,9 @@ public class ArticleService {
         if(savedArticle==null) throw new HttpException(CommonErrorCode.SAVE_FAILED, Article.class, "");
 
         // files
-        List<Attachment> attachments = attachmentService.saveFiles("ARTICLE", savedArticle.getId(), dto.getFiles());
+        List<Attachment> attachments = attachmentService.saveFiles("ARTICLE", savedArticle.getId(), multipartFiles);
         savedArticle.setFiles(attachments);
-
+//        System.out.println("DEBUG "+multipartFiles.size());
         return ArticleDto.from(savedArticle);
     }
 
